@@ -1,8 +1,4 @@
-import OpenAI from "openai";
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+import { generateText } from "ai";
 
 type QuoteRequest = {
   bedrooms: number;
@@ -108,21 +104,13 @@ Customer quote request:
 Generate the JSON response now.
 `;
 
-    const response = await client.responses.create({
-      model: "gpt-5",
-      input: [
-        {
-          role: "system",
-          content: systemPrompt,
-        },
-        {
-          role: "user",
-          content: userPrompt,
-        },
-      ],
+    const result = await generateText({
+      model: "openai/gpt-4o-mini",
+      system: systemPrompt,
+      prompt: userPrompt,
     });
 
-    const raw = response.output_text?.trim();
+    const raw = result.text?.trim();
 
     if (!raw) {
       return Response.json(
