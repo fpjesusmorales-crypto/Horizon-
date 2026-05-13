@@ -2,10 +2,24 @@
 
 import { useState } from "react";
 
+const ADD_ON_OPTIONS = [
+  "Inside Refrigerator",
+  "Inside Oven",
+  "Interior Windows",
+  "Baseboards",
+  "Inside Cabinets / Drawers",
+  "Laundry Folding",
+  "Dishes",
+  "Pet Hair Treatment",
+  "Garage Sweep / Reset",
+  "Same-Day / Urgent Request",
+];
+
 type QuoteResponse = {
   recommendedService: string;
   estimatedRange: string;
   summary: string;
+  selectedAddOns: string[];
   nextStep: string;
 };
 
@@ -19,18 +33,24 @@ export default function QuoteEstimator() {
     zipCode: "",
   });
 
+  const [selectedAddOns, setSelectedAddOns] = useState<string[]>([]);
   const [result, setResult] = useState<QuoteResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  function updateField(
-    field: string,
-    value: string | number
-  ) {
+  function updateField(field: string, value: string | number) {
     setForm((prev) => ({
       ...prev,
       [field]: value,
     }));
+  }
+
+  function toggleAddOn(addOn: string) {
+    setSelectedAddOns((prev) =>
+      prev.includes(addOn)
+        ? prev.filter((a) => a !== addOn)
+        : [...prev, addOn]
+    );
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -50,6 +70,7 @@ export default function QuoteEstimator() {
           | "move-in-move-out",
         condition: form.condition as "light" | "moderate" | "heavy",
         zipCode: form.zipCode || undefined,
+        addOns: selectedAddOns,
       };
 
       const res = await fetch("/api/quote", {
@@ -67,8 +88,9 @@ export default function QuoteEstimator() {
       }
 
       setResult(data);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong.");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong.";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -177,6 +199,28 @@ export default function QuoteEstimator() {
                 />
               </div>
 
+              <div>
+                <label className="mb-2 block text-sm font-medium text-slate-700">
+                  Add-Ons (optional)
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {ADD_ON_OPTIONS.map((addOn) => (
+                    <label
+                      key={addOn}
+                      className="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs transition hover:border-teal-300"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedAddOns.includes(addOn)}
+                        onChange={() => toggleAddOn(addOn)}
+                        className="h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                      />
+                      <span className="text-slate-700">{addOn}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
               <button
                 type="submit"
                 disabled={loading}
@@ -194,7 +238,7 @@ export default function QuoteEstimator() {
                   Your estimate will appear here
                 </div>
                 <p className="mt-3 text-sm leading-6 text-slate-600">
-                  This tool provides an estimate range only. Final pricing can vary based on the home’s condition, layout, and service needs.
+                  This tool provides an estimate range only. Final pricing can vary based on the home&apos;s condition, layout, and service needs.
                 </p>
               </div>
             )}
@@ -233,6 +277,21 @@ export default function QuoteEstimator() {
                     {result.summary}
                   </p>
                 </div>
+
+                {result.selectedAddOns && result.selectedAddOns.length > 0 && (
+                  <div>
+                    <div className="text-sm font-medium text-slate-500">
+                      Selected Add-Ons
+                    </div>
+                    <ul className="mt-1 space-y-1">
+                      {result.selectedAddOns.map((addOn) => (
+                        <li key={addOn} className="text-sm text-slate-700">
+                          • {addOn}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
                 <div>
                   <div className="text-sm font-medium text-slate-500">

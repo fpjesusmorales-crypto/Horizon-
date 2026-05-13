@@ -5,6 +5,7 @@ type QuoteRequest = {
   cleaningType: "standard" | "deep" | "move-in-move-out";
   condition: "light" | "moderate" | "heavy";
   zipCode?: string;
+  addOns?: string[];
 };
 
 function validateBody(body: unknown): body is QuoteRequest {
@@ -23,7 +24,8 @@ function validateBody(body: unknown): body is QuoteRequest {
     (b.squareFeet === undefined || typeof b.squareFeet === "number") &&
     validCleaningTypes.includes(b.cleaningType as string) &&
     validConditions.includes(b.condition as string) &&
-    (b.zipCode === undefined || typeof b.zipCode === "string")
+    (b.zipCode === undefined || typeof b.zipCode === "string") &&
+    (b.addOns === undefined || Array.isArray(b.addOns))
   );
 }
 
@@ -53,6 +55,20 @@ const CONDITION_MULTIPLIER = {
   heavy: 1.15,
 };
 
+// Add-on pricing (min and max estimates)
+const ADD_ON_PRICING: Record<string, { min: number; max: number; isPercentage?: boolean }> = {
+  "Inside Refrigerator": { min: 35, max: 60 },
+  "Inside Oven": { min: 35, max: 75 },
+  "Interior Windows": { min: 25, max: 50 }, // Assuming 5-10 windows
+  "Baseboards": { min: 40, max: 100 },
+  "Inside Cabinets / Drawers": { min: 40, max: 100 },
+  "Laundry Folding": { min: 25, max: 50 },
+  "Dishes": { min: 20, max: 45 },
+  "Pet Hair Treatment": { min: 25, max: 75 },
+  "Garage Sweep / Reset": { min: 40, max: 100 },
+  "Same-Day / Urgent Request": { min: 0, max: 0, isPercentage: true },
+};
+
 // Bathroom surcharge
 const BATHROOM_SURCHARGE = 15; // per bathroom over 1
 
@@ -63,7 +79,7 @@ function getSizeCategory(bedrooms: number): "small" | "medium" | "large" {
 }
 
 function calculateEstimate(request: QuoteRequest) {
-  const { bedrooms, bathrooms, cleaningType, condition } = request;
+  const { bedrooms, bathrooms, cleaningType, condition, addOns = [] } = request;
 
   const sizeCategory = getSizeCategory(bedrooms);
   const baseRange = PRICING[cleaningType][sizeCategory];
@@ -78,6 +94,32 @@ function calculateEstimate(request: QuoteRequest) {
   const bathroomExtra = extraBathrooms * BATHROOM_SURCHARGE;
   minPrice += bathroomExtra;
   maxPrice += bathroomExtra;
+
+  // Calculate add-on costs
+  let addOnMinTotal = 0;
+  let addOnMaxTotal = 0;
+  let hasSameDayRequest = false;
+
+  for (const addOn of addOns) {
+    const pricing = ADD_ON_PRICING[addOn];
+    if (pricing) {
+      if (pricing.isPercentage) {
+        hasSameDayRequest = true;
+      } else {
+        addOnMinTotal += pricing.min;
+        addOnMaxTotal += pricing.max;
+      }
+    }
+  }
+
+  minPrice += addOnMinTotal;
+  maxPrice += addOnMaxTotal;
+
+  // Apply same-day surcharge (20%) if selected
+  if (hasSameDayRequest) {
+    minPrice *= 1.2;
+    maxPrice *= 1.2;
+  }
 
   // Round to nearest $5
   minPrice = Math.round(minPrice / 5) * 5;
@@ -100,16 +142,22 @@ function getServiceName(cleaningType: string): string {
 }
 
 function generateSummary(request: QuoteRequest, minPrice: number, maxPrice: number): string {
-  const { bedrooms, bathrooms, cleaningType, condition } = request;
+  const { bedrooms, bathrooms, cleaningType, condition, addOns = [] } = request;
   const serviceName = getServiceName(cleaningType);
 
   let summary = `Based on your ${bedrooms} bedroom, ${bathrooms} bathroom home, we estimate a ${serviceName.toLowerCase()} will cost between $${minPrice} and $${maxPrice}.`;
 
+  if (addOns.length > 0) {
+    summary += ` This includes ${addOns.length} add-on service${addOns.length > 1 ? "s" : ""}.`;
+  }
+
   if (condition === "heavy") {
     summary += " The heavy condition of the home may require additional time and attention.";
   } else if (condition === "light") {
-    summary += " Since the home is in light condition, we may be able to complete the job quickly.";
+    summary += " Since the home is in light condition, we may be able to complete the job efficiently.";
   }
+
+  summary += " Final pricing depends on condition, size, layout, and actual scope.";
 
   return summary;
 }
@@ -131,8 +179,9 @@ export async function POST(req: Request) {
 
     const response = {
       recommendedService: serviceName,
-      estimatedRange: `$${minPrice} - $${maxPrice}`,
+      estimatedRange: `$${minPrice} – $${maxPrice}`,
       summary,
+      selectedAddOns: body.addOns || [],
       nextStep: "Ready to get started? Click 'Book a Cleaning' to schedule your appointment and we'll confirm the final price based on an in-home assessment.",
     };
 
