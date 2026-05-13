@@ -23,7 +23,7 @@ export function ScheduleSection() {
         <div className="mt-8">
           <div
             className="calendly-inline-widget mx-auto rounded-2xl overflow-hidden bg-white"
-            data-url="https://calendly.com/fpjesus-morales/30min"
+            data-url="https://calendly.com/fpjesus-morales/new-meeting"
             style={{ minWidth: "320px", height: "700px", maxWidth: "900px" }}
           />
           <Script
