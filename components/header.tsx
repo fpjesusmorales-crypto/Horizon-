@@ -29,6 +29,7 @@ export function Header() {
         <nav className="hidden items-center gap-8 md:flex">
           <a href="#home" className="text-sm text-slate-600 transition hover:text-slate-900">Home</a>
           <a href="#services" className="text-sm text-slate-600 transition hover:text-slate-900">Services</a>
+          <a href="#add-ons" className="text-sm text-slate-600 transition hover:text-slate-900">Add-Ons</a>
           <a href="#about" className="text-sm text-slate-600 transition hover:text-slate-900">About</a>
           <a href="#safety" className="text-sm text-slate-600 transition hover:text-slate-900">Safety</a>
           <a href="#contact" className="text-sm text-slate-600 transition hover:text-slate-900">Contact</a>
@@ -55,6 +56,7 @@ export function Header() {
           <nav className="flex flex-col gap-4">
             <a href="#home" className="text-sm text-slate-600 transition hover:text-slate-900" onClick={() => setMobileMenuOpen(false)}>Home</a>
             <a href="#services" className="text-sm text-slate-600 transition hover:text-slate-900" onClick={() => setMobileMenuOpen(false)}>Services</a>
+            <a href="#add-ons" className="text-sm text-slate-600 transition hover:text-slate-900" onClick={() => setMobileMenuOpen(false)}>Add-Ons</a>
             <a href="#about" className="text-sm text-slate-600 transition hover:text-slate-900" onClick={() => setMobileMenuOpen(false)}>About</a>
             <a href="#safety" className="text-sm text-slate-600 transition hover:text-slate-900" onClick={() => setMobileMenuOpen(false)}>Safety</a>
             <a href="#contact" className="text-sm text-slate-600 transition hover:text-slate-900" onClick={() => setMobileMenuOpen(false)}>Contact</a>
