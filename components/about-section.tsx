@@ -23,8 +23,8 @@ export function AboutSection() {
           <div className="relative">
             <div className="overflow-hidden rounded-[2rem] shadow-xl">
               <Image
-                src="/images/clean-home.jpg"
-                alt="A bright, freshly cleaned Nashville home interior"
+                src="/images/horizon-team-cleaning.png"
+                alt="Horizon Ops cleaning professionals in branded uniforms cleaning a modern home"
                 width={600}
                 height={400}
                 className="h-auto w-full object-cover"
