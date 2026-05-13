@@ -194,7 +194,7 @@ export default function QuoteEstimator() {
                   Your estimate will appear here
                 </div>
                 <p className="mt-3 text-sm leading-6 text-slate-600">
-                  This tool provides an estimate range only. Final pricing can vary based on the home’s condition, layout, and service needs.
+                  This tool provides an estimate range only. Final pricing can vary based on the home's condition, layout, and service needs.
                 </p>
               </div>
             )}
