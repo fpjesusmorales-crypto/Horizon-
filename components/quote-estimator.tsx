@@ -60,7 +60,16 @@ export default function QuoteEstimator() {
         body: JSON.stringify(payload),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error(
+          "The quote API returned HTML instead of JSON. Check that app/api/quote/route.ts exists, the route is deployed, and OPENAI_API_KEY is set in Vercel."
+        );
+      }
 
       if (!res.ok) {
         throw new Error(data.error || "Failed to get estimate.");
