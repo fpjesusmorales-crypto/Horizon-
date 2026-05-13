@@ -25,8 +25,8 @@ export function AboutSection() {
               <Image
                 src="/images/horizon-team-cleaning.png"
                 alt="Horizon Ops cleaning professionals in branded uniforms cleaning a modern home"
-                width={600}
-                height={400}
+                width={800}
+                height={533}
                 className="h-auto w-full object-cover"
               />
             </div>
