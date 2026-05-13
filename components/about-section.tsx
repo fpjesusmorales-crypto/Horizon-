@@ -23,7 +23,7 @@ export function AboutSection() {
           <div className="relative">
             <div className="overflow-hidden rounded-[2rem] shadow-xl">
               <Image
-                src="/images/horizon-team-cleaning.png"
+                src="/images/horizon-team-cleaning.png?v=2"
                 alt="Horizon Ops cleaning professionals in branded uniforms cleaning a modern home"
                 width={800}
                 height={533}
