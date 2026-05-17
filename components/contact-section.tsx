@@ -85,12 +85,8 @@ export function ContactSection() {
 
           <div className="space-y-6">
             <div className="rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-sm">
-              <div className="text-sm font-medium text-slate-500">Phone</div>
-              <div className="mt-2 text-lg font-semibold">(615) 428-7282</div>
-            </div>
-            <div className="rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-sm">
               <div className="text-sm font-medium text-slate-500">Email</div>
-              <div className="mt-2 text-lg font-semibold">horizonoperationsllc@gmail.com</div>
+              <div className="mt-2 text-lg font-semibold">Jesusmorales@horizonoperations.cleaning</div>
             </div>
             <div className="rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-sm">
               <div className="text-sm font-medium text-slate-500">Message</div>
