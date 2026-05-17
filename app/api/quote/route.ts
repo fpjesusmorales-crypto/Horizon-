@@ -4,6 +4,7 @@ type QuoteRequest = {
   squareFeet?: number;
   cleaningType: "standard" | "deep" | "move-in-move-out";
   condition: "light" | "moderate" | "heavy";
+  serviceFrequency: "one-time" | "weekly" | "biweekly" | "monthly";
   zipCode?: string;
   addOns?: string[];
 };
@@ -13,6 +14,7 @@ function validateBody(body: unknown): body is QuoteRequest {
 
   const validCleaningTypes = ["standard", "deep", "move-in-move-out"];
   const validConditions = ["light", "moderate", "heavy"];
+  const validFrequencies = ["one-time", "weekly", "biweekly", "monthly"];
 
   const b = body as Record<string, unknown>;
 
@@ -24,6 +26,7 @@ function validateBody(body: unknown): body is QuoteRequest {
     (b.squareFeet === undefined || typeof b.squareFeet === "number") &&
     validCleaningTypes.includes(b.cleaningType as string) &&
     validConditions.includes(b.condition as string) &&
+    validFrequencies.includes(b.serviceFrequency as string) &&
     (b.zipCode === undefined || typeof b.zipCode === "string") &&
     (b.addOns === undefined || Array.isArray(b.addOns))
   );
@@ -55,6 +58,21 @@ const CONDITION_MULTIPLIER = {
   heavy: 1.15,
 };
 
+// Frequency multipliers and descriptions
+const FREQUENCY_MULTIPLIER = {
+  "one-time": 1.0,
+  "weekly": 0.92,    // 8% recurring discount
+  "biweekly": 1.0,   // Standard pricing, most popular
+  "monthly": 1.05,   // 5% increase due to buildup
+};
+
+const FREQUENCY_LABELS: Record<string, string> = {
+  "one-time": "One-Time Cleaning",
+  "weekly": "Weekly Recurring",
+  "biweekly": "Biweekly Recurring",
+  "monthly": "Monthly Recurring",
+};
+
 // Add-on pricing (min and max estimates)
 const ADD_ON_PRICING: Record<string, { min: number; max: number; isPercentage?: boolean }> = {
   "Inside Refrigerator": { min: 35, max: 60 },
@@ -79,15 +97,16 @@ function getSizeCategory(bedrooms: number): "small" | "medium" | "large" {
 }
 
 function calculateEstimate(request: QuoteRequest) {
-  const { bedrooms, bathrooms, cleaningType, condition, addOns = [] } = request;
+  const { bedrooms, bathrooms, cleaningType, condition, serviceFrequency, addOns = [] } = request;
 
   const sizeCategory = getSizeCategory(bedrooms);
   const baseRange = PRICING[cleaningType][sizeCategory];
   const conditionMult = CONDITION_MULTIPLIER[condition];
+  const frequencyMult = FREQUENCY_MULTIPLIER[serviceFrequency];
 
   // Calculate adjusted range
-  let minPrice = baseRange.min * conditionMult;
-  let maxPrice = baseRange.max * conditionMult;
+  let minPrice = baseRange.min * conditionMult * frequencyMult;
+  let maxPrice = baseRange.max * conditionMult * frequencyMult;
 
   // Add bathroom surcharge (for bathrooms beyond the first)
   const extraBathrooms = Math.max(0, bathrooms - 1);
@@ -142,10 +161,11 @@ function getServiceName(cleaningType: string): string {
 }
 
 function generateSummary(request: QuoteRequest, minPrice: number, maxPrice: number): string {
-  const { bedrooms, bathrooms, cleaningType, condition, addOns = [] } = request;
+  const { bedrooms, bathrooms, cleaningType, condition, serviceFrequency, addOns = [] } = request;
   const serviceName = getServiceName(cleaningType);
+  const frequencyLabel = FREQUENCY_LABELS[serviceFrequency];
 
-  let summary = `Based on your ${bedrooms} bedroom, ${bathrooms} bathroom home, we estimate a ${serviceName.toLowerCase()} will cost between $${minPrice} and $${maxPrice}.`;
+  let summary = `Based on your ${bedrooms} bedroom, ${bathrooms} bathroom home, we estimate a ${serviceName.toLowerCase()} (${frequencyLabel}) will cost between $${minPrice} and $${maxPrice}.`;
 
   if (addOns.length > 0) {
     summary += ` This includes ${addOns.length} add-on service${addOns.length > 1 ? "s" : ""}.`;
@@ -155,6 +175,17 @@ function generateSummary(request: QuoteRequest, minPrice: number, maxPrice: numb
     summary += " The heavy condition of the home may require additional time and attention.";
   } else if (condition === "light") {
     summary += " Since the home is in light condition, we may be able to complete the job efficiently.";
+  }
+
+  // Add frequency-specific messaging
+  if (serviceFrequency === "weekly") {
+    summary += " Weekly recurring service includes a small discount and helps maintain peak cleanliness with minimal buildup between visits.";
+  } else if (serviceFrequency === "biweekly") {
+    summary += " Biweekly cleaning is our most popular option—it balances consistent upkeep with affordability and helps prevent buildup between visits.";
+  } else if (serviceFrequency === "monthly") {
+    summary += " Monthly service may require more time per visit as buildup can return between cleanings, but it's a great option for lighter-traffic homes.";
+  } else {
+    summary += " Interested in recurring service? It can reduce long-term cleaning effort and help maintain consistency in your home.";
   }
 
   summary += " Final pricing depends on condition, size, layout, and actual scope.";

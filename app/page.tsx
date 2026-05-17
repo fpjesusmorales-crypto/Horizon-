@@ -2,6 +2,7 @@ import { Header } from "@/components/header"
 import { HeroSection } from "@/components/hero-section"
 import { ServicesSection } from "@/components/services-section"
 import { AddonsSection } from "@/components/addons-section"
+import { RecurringPlansSection } from "@/components/recurring-plans-section"
 import { ExpectSection } from "@/components/expect-section"
 import { AboutSection } from "@/components/about-section"
 import { TestimonialsSection } from "@/components/testimonials-section"
@@ -18,6 +19,7 @@ export default function HorizonOperationsWebsite() {
         <HeroSection />
         <ServicesSection />
         <AddonsSection />
+        <RecurringPlansSection />
         <ExpectSection />
         <AboutSection />
         <TestimonialsSection />
