@@ -11,11 +11,39 @@ export function ContactSection() {
     service: "",
     message: "",
   })
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [errorMessage, setErrorMessage] = useState("")
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    // Handle form submission
-    console.log("Form submitted:", formData)
+    setStatus("loading")
+    setErrorMessage("")
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || "Failed to send message")
+      }
+
+      setStatus("success")
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        homeSize: "",
+        service: "",
+        message: "",
+      })
+    } catch (error) {
+      setStatus("error")
+      setErrorMessage(error instanceof Error ? error.message : "Something went wrong")
+    }
   }
 
   return (
@@ -76,10 +104,21 @@ export function ContactSection() {
               />
               <button
                 type="submit"
-                className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5 sm:col-span-2"
+                disabled={status === "loading"}
+                className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 sm:col-span-2"
               >
-                Book a Cleaning
+                {status === "loading" ? "Sending..." : "Book a Cleaning"}
               </button>
+              {status === "success" && (
+                <p className="text-center text-sm text-teal-600 sm:col-span-2">
+                  Thank you! We&apos;ll be in touch soon.
+                </p>
+              )}
+              {status === "error" && (
+                <p className="text-center text-sm text-red-600 sm:col-span-2">
+                  {errorMessage}
+                </p>
+              )}
             </form>
           </div>
 
