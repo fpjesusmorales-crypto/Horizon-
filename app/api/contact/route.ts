@@ -22,7 +22,7 @@ export async function POST(request: Request) {
     }
 
     const { data, error } = await resend.emails.send({
-      from: "Horizon Operations <onboarding@resend.dev>",
+      from: "Horizon Operations <noreply@horizonoperations.cleaning>",
       to: ["Jesusmorales@horizonoperations.cleaning"],
       subject: `New Cleaning Request from ${name}`,
       html: `
