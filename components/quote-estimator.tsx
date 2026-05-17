@@ -54,6 +54,26 @@ export default function QuoteEstimator() {
     );
   }
 
+  function formatNumberWithCommas(value: string): string {
+    // Remove all non-digit characters
+    const numericValue = value.replace(/\D/g, "");
+    // Add commas for thousands
+    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  function handleSquareFeetChange(value: string) {
+    const formatted = formatNumberWithCommas(value);
+    setForm((prev) => ({
+      ...prev,
+      squareFeet: formatted,
+    }));
+  }
+
+  function getNumericSquareFeet(): number | undefined {
+    const numericValue = form.squareFeet.replace(/,/g, "");
+    return numericValue ? Number(numericValue) : undefined;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -64,7 +84,7 @@ export default function QuoteEstimator() {
       const payload = {
         bedrooms: Number(form.bedrooms),
         bathrooms: Number(form.bathrooms),
-        squareFeet: form.squareFeet ? Number(form.squareFeet) : undefined,
+        squareFeet: getNumericSquareFeet(),
         cleaningType: form.cleaningType as
           | "standard"
           | "deep"
@@ -151,10 +171,11 @@ export default function QuoteEstimator() {
                   Square Feet (optional)
                 </label>
                 <input
-                  type="number"
-                  min="0"
+                  type="text"
+                  inputMode="numeric"
                   value={form.squareFeet}
-                  onChange={(e) => updateField("squareFeet", e.target.value)}
+                  onChange={(e) => handleSquareFeetChange(e.target.value)}
+                  placeholder="e.g. 2,500"
                   className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm"
                 />
               </div>
