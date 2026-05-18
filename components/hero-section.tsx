@@ -16,7 +16,7 @@ export function HeroSection() {
             reliable scheduling, and service you can trust.
           </p>
           <div className="mt-4 text-sm font-medium text-teal-300">
-            Call or text: (615) 428-7282
+            Email: Jesusmorales@horizonoperations.cleaning
           </div>
           <div className="mt-8 flex flex-wrap gap-4">
             <a
