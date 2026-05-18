@@ -16,7 +16,7 @@ export function HeroSection() {
             reliable scheduling, and service you can trust.
           </p>
           <div className="mt-4 text-sm font-medium text-teal-300">
-            Email: Jesusmorales@horizonoperations.cleaning
+            Email: <a href="mailto:Jesusmorales@horizonoperations.cleaning" className="underline underline-offset-2 hover:text-teal-200 transition">Jesusmorales@horizonoperations.cleaning</a>
           </div>
           <div className="mt-8 flex flex-wrap gap-4">
             <a
