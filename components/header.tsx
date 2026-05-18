@@ -4,17 +4,20 @@ import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Menu, X } from "lucide-react"
-
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/services", label: "Services" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-]
+import { useLanguage } from "@/lib/i18n"
+import { LanguageToggle } from "./language-toggle"
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
+  const { t } = useLanguage()
+
+  const navLinks = [
+    { href: "/", label: t.nav.home },
+    { href: "/services", label: t.nav.services },
+    { href: "/about", label: t.nav.about },
+    { href: "/contact", label: t.nav.contact },
+  ]
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -50,12 +53,15 @@ export function Header() {
           ))}
         </nav>
 
-        <Link
-          href="/book"
-          className="hidden rounded-2xl bg-slate-900 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5 md:inline-flex"
-        >
-          Book a Cleaning
-        </Link>
+        <div className="hidden items-center gap-4 md:flex">
+          <LanguageToggle />
+          <Link
+            href="/book"
+            className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5"
+          >
+            {t.nav.bookCleaning}
+          </Link>
+        </div>
 
         <button
           className="md:hidden"
@@ -81,12 +87,15 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            <div className="mt-2 flex items-center justify-between">
+              <LanguageToggle />
+            </div>
             <Link
               href="/book"
               className="mt-2 rounded-2xl bg-slate-900 px-5 py-3 text-center text-sm font-medium text-white"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Book a Cleaning
+              {t.nav.bookCleaning}
             </Link>
           </nav>
         </div>

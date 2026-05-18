@@ -1,14 +1,19 @@
-import Link from "next/link"
+"use client"
 
-const footerLinks = [
-  { href: "/", label: "Home" },
-  { href: "/services", label: "Services" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-  { href: "/book", label: "Book" },
-]
+import Link from "next/link"
+import { useLanguage } from "@/lib/i18n"
 
 export function Footer() {
+  const { t } = useLanguage()
+
+  const footerLinks = [
+    { href: "/", label: t.nav.home },
+    { href: "/services", label: t.nav.services },
+    { href: "/about", label: t.nav.about },
+    { href: "/contact", label: t.nav.contact },
+    { href: "/book", label: t.nav.bookCleaning },
+  ]
+
   return (
     <footer className="border-t border-slate-200 bg-white">
       <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 md:flex-row md:items-center md:justify-between">
@@ -30,7 +35,7 @@ export function Footer() {
             </div>
           </Link>
           <p className="mt-3 max-w-md text-sm text-slate-500">
-            Residential cleaning built on reliability, clear communication, and consistent results.
+            {t.footer.tagline}
           </p>
           <p className="mt-2 text-sm text-slate-500">
             <a
@@ -55,7 +60,7 @@ export function Footer() {
             ))}
           </div>
           <div className="mt-2 text-xs text-slate-400">
-            &copy; {new Date().getFullYear()} Horizon Operations LLC. All rights reserved.
+            &copy; {new Date().getFullYear()} Horizon Operations LLC. {t.footer.rights}
           </div>
         </div>
       </div>

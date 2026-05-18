@@ -1,22 +1,10 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
-
-const SERVICE_OPTIONS = [
-  { value: "standard", label: "Standard Cleaning", price: "$119+" },
-  { value: "deep", label: "Deep Cleaning", price: "$199+" },
-  { value: "move", label: "Move-In / Move-Out", price: "$279+" },
-]
-
-const TIME_SLOTS = [
-  "8:00 AM - 10:00 AM",
-  "10:00 AM - 12:00 PM",
-  "12:00 PM - 2:00 PM",
-  "2:00 PM - 4:00 PM",
-  "4:00 PM - 6:00 PM",
-]
+import { useLanguage } from "@/lib/i18n"
 
 export function BookingForm() {
+  const { locale, t } = useLanguage()
   const [step, setStep] = useState(1)
   const [formData, setFormData] = useState({
     // Step 1: Service
@@ -39,6 +27,20 @@ export function BookingForm() {
   })
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
   const [errorMessage, setErrorMessage] = useState("")
+
+  const SERVICE_OPTIONS = [
+    { value: "standard", labelEn: "Standard Cleaning", labelEs: "Limpieza Estándar", price: "$119+" },
+    { value: "deep", labelEn: "Deep Cleaning", labelEs: "Limpieza Profunda", price: "$199+" },
+    { value: "move", labelEn: "Move-In / Move-Out", labelEs: "Mudanza", price: "$279+" },
+  ]
+
+  const TIME_SLOTS = [
+    "8:00 AM - 10:00 AM",
+    "10:00 AM - 12:00 PM",
+    "12:00 PM - 2:00 PM",
+    "2:00 PM - 4:00 PM",
+    "4:00 PM - 6:00 PM",
+  ]
 
   function updateField(field: string, value: string) {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -115,19 +117,21 @@ export function BookingForm() {
             <polyline points="20 6 9 17 4 12" />
           </svg>
         </div>
-        <h3 className="text-2xl font-semibold text-slate-900">Booking Request Received!</h3>
+        <h3 className="text-2xl font-semibold text-slate-900">{t.booking.success.title}</h3>
         <p className="mt-3 text-slate-600">
-          Thank you for your booking request. We&apos;ll review your preferred times and 
-          confirm your appointment within 24 hours.
+          {t.booking.success.description}
         </p>
         <p className="mt-2 text-sm text-slate-500">
-          A confirmation email has been sent to {formData.email}
+          {locale === "es" 
+            ? `Se ha enviado un correo de confirmación a ${formData.email}`
+            : `A confirmation email has been sent to ${formData.email}`
+          }
         </p>
         <a
           href="/"
           className="mt-6 inline-flex rounded-2xl bg-slate-900 px-6 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5"
         >
-          Return Home
+          {t.booking.success.backHome}
         </a>
       </div>
     )
@@ -178,10 +182,10 @@ export function BookingForm() {
           ))}
         </div>
         <div className="mt-3 flex justify-between text-xs text-slate-500">
-          <span>Service</span>
-          <span>Date & Time</span>
-          <span>Home</span>
-          <span>Contact</span>
+          <span>{t.booking.steps.service}</span>
+          <span>{t.booking.steps.datetime}</span>
+          <span>{t.booking.steps.details}</span>
+          <span>{t.booking.steps.contact}</span>
         </div>
       </div>
 
@@ -190,9 +194,12 @@ export function BookingForm() {
         {step === 1 && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-xl font-semibold text-slate-900">Select Your Service</h3>
+              <h3 className="text-xl font-semibold text-slate-900">{t.booking.selectService}</h3>
               <p className="mt-1 text-sm text-slate-600">
-                Choose the type of cleaning service you need
+                {locale === "es"
+                  ? "Elija el tipo de servicio de limpieza que necesita"
+                  : "Choose the type of cleaning service you need"
+                }
               </p>
             </div>
 
@@ -215,7 +222,9 @@ export function BookingForm() {
                       onChange={(e) => updateField("service", e.target.value)}
                       className="h-4 w-4 border-slate-300 text-teal-600 focus:ring-teal-500"
                     />
-                    <span className="font-medium text-slate-900">{service.label}</span>
+                    <span className="font-medium text-slate-900">
+                      {locale === "es" ? service.labelEs : service.labelEn}
+                    </span>
                   </div>
                   <span className="text-sm font-semibold text-slate-600">{service.price}</span>
                 </label>
@@ -224,17 +233,17 @@ export function BookingForm() {
 
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
-                Cleaning Frequency
+                {locale === "es" ? "Frecuencia de Limpieza" : "Cleaning Frequency"}
               </label>
               <select
                 value={formData.frequency}
                 onChange={(e) => updateField("frequency", e.target.value)}
                 className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-teal-500"
               >
-                <option value="one-time">One-Time Cleaning</option>
-                <option value="weekly">Weekly (20% off)</option>
-                <option value="biweekly">Biweekly (15% off)</option>
-                <option value="monthly">Monthly (10% off)</option>
+                <option value="one-time">{locale === "es" ? "Limpieza Única" : "One-Time Cleaning"}</option>
+                <option value="weekly">{locale === "es" ? "Semanal (20% desc.)" : "Weekly (20% off)"}</option>
+                <option value="biweekly">{locale === "es" ? "Quincenal (15% desc.)" : "Biweekly (15% off)"}</option>
+                <option value="monthly">{locale === "es" ? "Mensual (10% desc.)" : "Monthly (10% off)"}</option>
               </select>
             </div>
           </div>
@@ -244,16 +253,19 @@ export function BookingForm() {
         {step === 2 && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-xl font-semibold text-slate-900">Choose Your Preferred Date & Time</h3>
+              <h3 className="text-xl font-semibold text-slate-900">{t.booking.selectDate}</h3>
               <p className="mt-1 text-sm text-slate-600">
-                Select when you&apos;d like us to come. We&apos;ll confirm availability within 24 hours.
+                {locale === "es"
+                  ? "Seleccione cuándo le gustaría que vayamos. Confirmaremos disponibilidad en 24 horas."
+                  : "Select when you'd like us to come. We'll confirm availability within 24 hours."
+                }
               </p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Preferred Date *
+                  {t.booking.preferredDate} *
                 </label>
                 <input
                   type="date"
@@ -266,7 +278,7 @@ export function BookingForm() {
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Alternate Date (optional)
+                  {locale === "es" ? "Fecha Alternativa (opcional)" : "Alternate Date (optional)"}
                 </label>
                 <input
                   type="date"
@@ -280,7 +292,7 @@ export function BookingForm() {
 
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
-                Preferred Time Window *
+                {t.booking.preferredTime} *
               </label>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {TIME_SLOTS.map((slot) => (
@@ -312,16 +324,19 @@ export function BookingForm() {
         {step === 3 && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-xl font-semibold text-slate-900">Tell Us About Your Home</h3>
+              <h3 className="text-xl font-semibold text-slate-900">{t.booking.homeDetails}</h3>
               <p className="mt-1 text-sm text-slate-600">
-                This helps us prepare and provide accurate pricing
+                {locale === "es"
+                  ? "Esto nos ayuda a prepararnos y proporcionar precios precisos"
+                  : "This helps us prepare and provide accurate pricing"
+                }
               </p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Square Feet
+                  {t.booking.squareFootage}
                 </label>
                 <input
                   type="text"
@@ -335,14 +350,14 @@ export function BookingForm() {
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Bedrooms
+                  {t.booking.bedrooms}
                 </label>
                 <select
                   value={formData.bedrooms}
                   onChange={(e) => updateField("bedrooms", e.target.value)}
                   className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-teal-500"
                 >
-                  <option value="">Select</option>
+                  <option value="">{locale === "es" ? "Seleccionar" : "Select"}</option>
                   <option value="1">1</option>
                   <option value="2">2</option>
                   <option value="3">3</option>
@@ -353,14 +368,14 @@ export function BookingForm() {
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Bathrooms
+                  {t.booking.bathrooms}
                 </label>
                 <select
                   value={formData.bathrooms}
                   onChange={(e) => updateField("bathrooms", e.target.value)}
                   className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-teal-500"
                 >
-                  <option value="">Select</option>
+                  <option value="">{locale === "es" ? "Seleccionar" : "Select"}</option>
                   <option value="1">1</option>
                   <option value="1.5">1.5</option>
                   <option value="2">2</option>
@@ -373,12 +388,12 @@ export function BookingForm() {
 
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
-                Special Instructions or Requests
+                {t.booking.additionalNotes}
               </label>
               <textarea
                 value={formData.specialInstructions}
                 onChange={(e) => updateField("specialInstructions", e.target.value)}
-                placeholder="Any specific areas to focus on, access instructions, pets, allergies, etc."
+                placeholder={t.booking.notesPlaceholder}
                 rows={4}
                 className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-teal-500"
               />
@@ -390,22 +405,25 @@ export function BookingForm() {
         {step === 4 && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-xl font-semibold text-slate-900">Your Contact Information</h3>
+              <h3 className="text-xl font-semibold text-slate-900">{t.booking.contactInfo}</h3>
               <p className="mt-1 text-sm text-slate-600">
-                We&apos;ll use this to confirm your booking
+                {locale === "es"
+                  ? "Usaremos esto para confirmar su reserva"
+                  : "We'll use this to confirm your booking"
+                }
               </p>
             </div>
 
             <div className="grid gap-4">
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Full Name *
+                  {t.booking.name} *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => updateField("name", e.target.value)}
-                  placeholder="John Smith"
+                  placeholder={t.booking.namePlaceholder}
                   className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-teal-500"
                 />
               </div>
@@ -413,26 +431,26 @@ export function BookingForm() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-sm font-medium text-slate-700">
-                    Email Address *
+                    {t.booking.email} *
                   </label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => updateField("email", e.target.value)}
-                    placeholder="john@example.com"
+                    placeholder={t.booking.emailPlaceholder}
                     className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-teal-500"
                   />
                 </div>
 
                 <div>
                   <label className="mb-2 block text-sm font-medium text-slate-700">
-                    Phone Number *
+                    {t.booking.phone} *
                   </label>
                   <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => updateField("phone", e.target.value)}
-                    placeholder="(615) 555-0123"
+                    placeholder={t.booking.phonePlaceholder}
                     className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-teal-500"
                   />
                 </div>
@@ -440,13 +458,13 @@ export function BookingForm() {
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">
-                  Service Address
+                  {t.booking.address}
                 </label>
                 <input
                   type="text"
                   value={formData.address}
                   onChange={(e) => updateField("address", e.target.value)}
-                  placeholder="123 Main St, Nashville, TN"
+                  placeholder={t.booking.addressPlaceholder}
                   className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-teal-500"
                 />
               </div>
@@ -469,7 +487,7 @@ export function BookingForm() {
               onClick={prevStep}
               className="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
             >
-              Back
+              {t.booking.back}
             </button>
           ) : (
             <div />
@@ -482,7 +500,7 @@ export function BookingForm() {
               disabled={!canProceed()}
               className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-medium text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Continue
+              {t.booking.next}
             </button>
           ) : (
             <button
@@ -490,7 +508,7 @@ export function BookingForm() {
               disabled={!canProceed() || status === "loading"}
               className="rounded-2xl bg-teal-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {status === "loading" ? "Submitting..." : "Submit Booking Request"}
+              {status === "loading" ? t.booking.submitting : t.booking.submit}
             </button>
           )}
         </div>

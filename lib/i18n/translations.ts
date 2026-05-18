@@ -1,0 +1,526 @@
+"use client"
+
+export type Locale = "en" | "es"
+
+export const translations = {
+  en: {
+    // Header
+    nav: {
+      home: "Home",
+      services: "Services",
+      about: "About",
+      contact: "Contact",
+      bookCleaning: "Book a Cleaning",
+      getQuote: "Get a Quote",
+    },
+    // Hero Section
+    hero: {
+      tagline: "Professional Cleaning Services",
+      title: "A Clean Home,",
+      titleHighlight: "Without the Hassle",
+      description: "Horizon Operations provides dependable residential cleaning focused on consistency, professionalism, and peace of mind. Clear communication, reliable scheduling, and service you can trust.",
+      email: "Email:",
+      viewServices: "View Services",
+    },
+    // Services
+    services: {
+      sectionTitle: "Our Services",
+      sectionSubtitle: "Professional cleaning solutions tailored to your needs",
+      standard: {
+        title: "Standard Clean",
+        description: "Regular maintenance cleaning to keep your home fresh and tidy. Perfect for weekly or biweekly visits.",
+        price: "$119",
+        features: ["Dusting all surfaces", "Vacuuming & mopping", "Kitchen cleaning", "Bathroom sanitization", "Trash removal"],
+      },
+      deep: {
+        title: "Deep Clean",
+        description: "Thorough top-to-bottom cleaning for homes that need extra attention. Ideal for seasonal refreshes.",
+        price: "$199",
+        features: ["Everything in Standard", "Baseboards & vents", "Interior windows", "Detailed appliance cleaning", "Cabinet exteriors"],
+      },
+      moveInOut: {
+        title: "Move In/Out Clean",
+        description: "Comprehensive cleaning for empty homes. Get your deposit back or start fresh in your new place.",
+        price: "$279",
+        features: ["Everything in Deep Clean", "Inside all cabinets", "Inside appliances", "Wall spot cleaning", "Garage sweep"],
+      },
+      startingAt: "Starting at",
+      bookNow: "Book Now",
+    },
+    // About
+    about: {
+      sectionTitle: "About Horizon Operations",
+      mission: {
+        title: "Our Mission",
+        description: "To provide dependable, high-quality residential cleaning services that give our clients peace of mind and more time for what matters most.",
+      },
+      story: {
+        title: "Our Story",
+        content: "Horizon Operations was founded with a simple belief: everyone deserves to come home to a clean space without the stress of doing it themselves. We understand that your home is your sanctuary, and we treat it with the respect and care it deserves.",
+      },
+      values: {
+        title: "Our Values",
+        reliability: {
+          title: "Reliability",
+          description: "We show up on time, every time. You can count on us.",
+        },
+        quality: {
+          title: "Quality",
+          description: "We never cut corners. Every clean meets our high standards.",
+        },
+        communication: {
+          title: "Communication",
+          description: "Clear, prompt communication is at the heart of what we do.",
+        },
+        trust: {
+          title: "Trust",
+          description: "Your home and privacy are safe with our vetted team.",
+        },
+      },
+      cta: {
+        title: "Ready for a Cleaner Home?",
+        description: "Experience the Horizon Operations difference. Book your first cleaning today.",
+        button: "Get Started",
+      },
+    },
+    // Contact
+    contact: {
+      sectionTitle: "Get in Touch",
+      sectionSubtitle: "Ready for a cleaner home? Reach out and we'll get back to you within 24 hours.",
+      email: "Email",
+      message: "Message",
+      whatToExpect: "What to expect",
+      expectDescription: "We'll respond within 24 hours with availability and a detailed quote based on your needs.",
+      form: {
+        name: "Name",
+        namePlaceholder: "Your name",
+        phone: "Phone",
+        phonePlaceholder: "Your phone number",
+        email: "Email",
+        emailPlaceholder: "your@email.com",
+        homeSize: "Home Size",
+        homeSizePlaceholder: "Select size",
+        service: "Service Type",
+        servicePlaceholder: "Select service",
+        message: "Message",
+        messagePlaceholder: "Tell us about your cleaning needs...",
+        submit: "Book a Cleaning",
+        sending: "Sending...",
+        success: "Thank you! We'll be in touch soon.",
+      },
+      homeSizes: {
+        "1bed": "1 Bedroom",
+        "2bed": "2 Bedrooms",
+        "3bed": "3 Bedrooms",
+        "4bed": "4+ Bedrooms",
+      },
+      serviceTypes: {
+        standard: "Standard Clean",
+        deep: "Deep Clean",
+        moveinout: "Move In/Out Clean",
+      },
+    },
+    // Quote Estimator
+    quote: {
+      title: "Get an Instant Quote",
+      subtitle: "Calculate your estimated cleaning cost in seconds",
+      serviceType: "Service Type",
+      squareFootage: "Square Footage",
+      sqftPlaceholder: "Enter square feet",
+      frequency: "Cleaning Frequency",
+      addons: "Add-ons",
+      windowQuantity: "Number of windows",
+      summary: {
+        title: "Your Estimate",
+        basePrice: "Base Price",
+        sizeMultiplier: "Size Adjustment",
+        subtotal: "Subtotal",
+        frequencyDiscount: "Frequency Discount",
+        addonsTotal: "Add-ons",
+        total: "Estimated Total",
+        customQuote: "Custom Quote Required",
+        customQuoteDesc: "For homes over 3,000 sq ft, please contact us for a personalized quote.",
+        contactUs: "Contact Us",
+        disclaimer: "Estimated price. Final quote may vary based on home condition and service needs.",
+        bookNow: "Book This Cleaning",
+      },
+      frequencies: {
+        onetime: "One-Time",
+        weekly: "Weekly (20% off)",
+        biweekly: "Biweekly (15% off)",
+        monthly: "Monthly (10% off)",
+      },
+      addonsLabels: {
+        oven: "Inside Oven",
+        fridge: "Inside Fridge",
+        baseboards: "Baseboards",
+        petHair: "Pet Hair Treatment",
+        windows: "Interior Windows",
+        laundry: "Laundry",
+        dishes: "Dishes",
+        organization: "Organization",
+      },
+    },
+    // FAQ
+    faq: {
+      title: "Frequently Asked Questions",
+      subtitle: "Everything you need to know about our cleaning services",
+      questions: [
+        {
+          question: "What areas do you serve?",
+          answer: "We proudly serve the Nashville metropolitan area and surrounding communities. If you're unsure whether we cover your location, please contact us and we'll be happy to let you know.",
+        },
+        {
+          question: "How do I prepare for a cleaning?",
+          answer: "We recommend picking up personal items, clothes, and toys from the floor so our team can focus on deep cleaning. Please also secure any pets and let us know about any specific areas of concern.",
+        },
+        {
+          question: "Do I need to be home during the cleaning?",
+          answer: "No, you don't need to be home. Many clients provide a key, door code, or use a lockbox. We treat your home with the utmost respect and security.",
+        },
+        {
+          question: "What cleaning products do you use?",
+          answer: "We use professional-grade, eco-friendly cleaning products that are safe for families and pets. If you have specific product preferences or allergies, please let us know.",
+        },
+        {
+          question: "How do I book a cleaning?",
+          answer: "You can book through our website using the booking form, or contact us directly via email. We'll confirm your appointment within 24 hours.",
+        },
+        {
+          question: "What's your cancellation policy?",
+          answer: "We understand plans change. We ask for at least 24 hours notice for cancellations or rescheduling to avoid a cancellation fee.",
+        },
+        {
+          question: "Are you insured and bonded?",
+          answer: "Yes, Horizon Operations is fully insured and bonded for your peace of mind. Our team members are thoroughly vetted and background-checked.",
+        },
+        {
+          question: "What if I'm not satisfied with the cleaning?",
+          answer: "Your satisfaction is our priority. If you're not completely happy with any aspect of our service, contact us within 24 hours and we'll make it right.",
+        },
+      ],
+    },
+    // Booking
+    booking: {
+      title: "Book Your Cleaning",
+      subtitle: "Schedule your cleaning in just a few steps",
+      steps: {
+        service: "Service",
+        datetime: "Date & Time",
+        details: "Details",
+        contact: "Contact",
+      },
+      selectService: "Select Your Service",
+      selectDate: "Select Date & Time",
+      preferredDate: "Preferred Date",
+      preferredTime: "Preferred Time",
+      timeSlots: {
+        morning: "Morning (8am - 12pm)",
+        afternoon: "Afternoon (12pm - 4pm)",
+        evening: "Evening (4pm - 7pm)",
+      },
+      homeDetails: "Home Details",
+      squareFootage: "Square Footage",
+      bedrooms: "Bedrooms",
+      bathrooms: "Bathrooms",
+      additionalNotes: "Additional Notes",
+      notesPlaceholder: "Any special requests, access instructions, or areas of focus...",
+      contactInfo: "Contact Information",
+      name: "Full Name",
+      namePlaceholder: "Your full name",
+      email: "Email Address",
+      emailPlaceholder: "your@email.com",
+      phone: "Phone Number",
+      phonePlaceholder: "(555) 555-5555",
+      address: "Address",
+      addressPlaceholder: "Street address",
+      city: "City",
+      cityPlaceholder: "City",
+      zip: "ZIP Code",
+      zipPlaceholder: "ZIP",
+      back: "Back",
+      next: "Next",
+      submit: "Submit Booking Request",
+      submitting: "Submitting...",
+      success: {
+        title: "Booking Request Submitted!",
+        description: "Thank you for choosing Horizon Operations. We'll review your request and contact you within 24 hours to confirm your appointment.",
+        backHome: "Back to Home",
+      },
+    },
+    // Footer
+    footer: {
+      tagline: "Professional cleaning services you can trust.",
+      quickLinks: "Quick Links",
+      contact: "Contact",
+      rights: "All rights reserved.",
+    },
+    // Common
+    common: {
+      learnMore: "Learn More",
+      getStarted: "Get Started",
+      contactUs: "Contact Us",
+    },
+  },
+  es: {
+    // Header
+    nav: {
+      home: "Inicio",
+      services: "Servicios",
+      about: "Nosotros",
+      contact: "Contacto",
+      bookCleaning: "Reservar Limpieza",
+      getQuote: "Obtener Cotización",
+    },
+    // Hero Section
+    hero: {
+      tagline: "Servicios de Limpieza Profesional",
+      title: "Un Hogar Limpio,",
+      titleHighlight: "Sin Complicaciones",
+      description: "Horizon Operations ofrece servicios de limpieza residencial confiables, enfocados en consistencia, profesionalismo y tranquilidad. Comunicación clara, programación confiable y servicio en el que puede confiar.",
+      email: "Correo:",
+      viewServices: "Ver Servicios",
+    },
+    // Services
+    services: {
+      sectionTitle: "Nuestros Servicios",
+      sectionSubtitle: "Soluciones de limpieza profesional adaptadas a sus necesidades",
+      standard: {
+        title: "Limpieza Estándar",
+        description: "Limpieza de mantenimiento regular para mantener su hogar fresco y ordenado. Perfecto para visitas semanales o quincenales.",
+        price: "$119",
+        features: ["Quitar polvo de todas las superficies", "Aspirar y trapear", "Limpieza de cocina", "Sanitización de baños", "Retiro de basura"],
+      },
+      deep: {
+        title: "Limpieza Profunda",
+        description: "Limpieza exhaustiva de arriba a abajo para hogares que necesitan atención extra. Ideal para refrescos estacionales.",
+        price: "$199",
+        features: ["Todo en Estándar", "Zócalos y ventilaciones", "Ventanas interiores", "Limpieza detallada de electrodomésticos", "Exteriores de gabinetes"],
+      },
+      moveInOut: {
+        title: "Limpieza de Mudanza",
+        description: "Limpieza integral para hogares vacíos. Recupere su depósito o comience fresco en su nuevo lugar.",
+        price: "$279",
+        features: ["Todo en Limpieza Profunda", "Interior de todos los gabinetes", "Interior de electrodomésticos", "Limpieza de manchas en paredes", "Barrido de garaje"],
+      },
+      startingAt: "Desde",
+      bookNow: "Reservar Ahora",
+    },
+    // About
+    about: {
+      sectionTitle: "Sobre Horizon Operations",
+      mission: {
+        title: "Nuestra Misión",
+        description: "Proporcionar servicios de limpieza residencial confiables y de alta calidad que brinden a nuestros clientes tranquilidad y más tiempo para lo que más importa.",
+      },
+      story: {
+        title: "Nuestra Historia",
+        content: "Horizon Operations fue fundada con una creencia simple: todos merecen llegar a un espacio limpio sin el estrés de hacerlo ellos mismos. Entendemos que su hogar es su santuario, y lo tratamos con el respeto y cuidado que merece.",
+      },
+      values: {
+        title: "Nuestros Valores",
+        reliability: {
+          title: "Confiabilidad",
+          description: "Llegamos a tiempo, siempre. Puede contar con nosotros.",
+        },
+        quality: {
+          title: "Calidad",
+          description: "Nunca tomamos atajos. Cada limpieza cumple con nuestros altos estándares.",
+        },
+        communication: {
+          title: "Comunicación",
+          description: "La comunicación clara y oportuna está en el corazón de lo que hacemos.",
+        },
+        trust: {
+          title: "Confianza",
+          description: "Su hogar y privacidad están seguros con nuestro equipo verificado.",
+        },
+      },
+      cta: {
+        title: "¿Listo para un Hogar más Limpio?",
+        description: "Experimente la diferencia de Horizon Operations. Reserve su primera limpieza hoy.",
+        button: "Comenzar",
+      },
+    },
+    // Contact
+    contact: {
+      sectionTitle: "Contáctenos",
+      sectionSubtitle: "¿Listo para un hogar más limpio? Comuníquese y le responderemos dentro de 24 horas.",
+      email: "Correo",
+      message: "Mensaje",
+      whatToExpect: "Qué esperar",
+      expectDescription: "Responderemos dentro de 24 horas con disponibilidad y una cotización detallada según sus necesidades.",
+      form: {
+        name: "Nombre",
+        namePlaceholder: "Su nombre",
+        phone: "Teléfono",
+        phonePlaceholder: "Su número de teléfono",
+        email: "Correo",
+        emailPlaceholder: "su@correo.com",
+        homeSize: "Tamaño del Hogar",
+        homeSizePlaceholder: "Seleccionar tamaño",
+        service: "Tipo de Servicio",
+        servicePlaceholder: "Seleccionar servicio",
+        message: "Mensaje",
+        messagePlaceholder: "Cuéntenos sobre sus necesidades de limpieza...",
+        submit: "Reservar Limpieza",
+        sending: "Enviando...",
+        success: "¡Gracias! Nos pondremos en contacto pronto.",
+      },
+      homeSizes: {
+        "1bed": "1 Habitación",
+        "2bed": "2 Habitaciones",
+        "3bed": "3 Habitaciones",
+        "4bed": "4+ Habitaciones",
+      },
+      serviceTypes: {
+        standard: "Limpieza Estándar",
+        deep: "Limpieza Profunda",
+        moveinout: "Limpieza de Mudanza",
+      },
+    },
+    // Quote Estimator
+    quote: {
+      title: "Obtenga una Cotización Instantánea",
+      subtitle: "Calcule el costo estimado de su limpieza en segundos",
+      serviceType: "Tipo de Servicio",
+      squareFootage: "Pies Cuadrados",
+      sqftPlaceholder: "Ingrese pies cuadrados",
+      frequency: "Frecuencia de Limpieza",
+      addons: "Servicios Adicionales",
+      windowQuantity: "Número de ventanas",
+      summary: {
+        title: "Su Estimación",
+        basePrice: "Precio Base",
+        sizeMultiplier: "Ajuste por Tamaño",
+        subtotal: "Subtotal",
+        frequencyDiscount: "Descuento por Frecuencia",
+        addonsTotal: "Servicios Adicionales",
+        total: "Total Estimado",
+        customQuote: "Cotización Personalizada Requerida",
+        customQuoteDesc: "Para hogares de más de 3,000 pies cuadrados, contáctenos para una cotización personalizada.",
+        contactUs: "Contáctenos",
+        disclaimer: "Precio estimado. La cotización final puede variar según la condición del hogar y las necesidades del servicio.",
+        bookNow: "Reservar Esta Limpieza",
+      },
+      frequencies: {
+        onetime: "Una Vez",
+        weekly: "Semanal (20% desc.)",
+        biweekly: "Quincenal (15% desc.)",
+        monthly: "Mensual (10% desc.)",
+      },
+      addonsLabels: {
+        oven: "Interior del Horno",
+        fridge: "Interior del Refrigerador",
+        baseboards: "Zócalos",
+        petHair: "Tratamiento de Pelo de Mascota",
+        windows: "Ventanas Interiores",
+        laundry: "Lavandería",
+        dishes: "Platos",
+        organization: "Organización",
+      },
+    },
+    // FAQ
+    faq: {
+      title: "Preguntas Frecuentes",
+      subtitle: "Todo lo que necesita saber sobre nuestros servicios de limpieza",
+      questions: [
+        {
+          question: "¿Qué áreas atienden?",
+          answer: "Servimos con orgullo el área metropolitana de Nashville y las comunidades circundantes. Si no está seguro de si cubrimos su ubicación, contáctenos y con gusto le informaremos.",
+        },
+        {
+          question: "¿Cómo me preparo para una limpieza?",
+          answer: "Recomendamos recoger artículos personales, ropa y juguetes del piso para que nuestro equipo pueda concentrarse en la limpieza profunda. También asegure a sus mascotas y háganos saber sobre cualquier área de preocupación específica.",
+        },
+        {
+          question: "¿Necesito estar en casa durante la limpieza?",
+          answer: "No, no necesita estar en casa. Muchos clientes proporcionan una llave, código de puerta o usan una caja de seguridad. Tratamos su hogar con el máximo respeto y seguridad.",
+        },
+        {
+          question: "¿Qué productos de limpieza utilizan?",
+          answer: "Utilizamos productos de limpieza de grado profesional y ecológicos que son seguros para familias y mascotas. Si tiene preferencias específicas de productos o alergias, háganoslo saber.",
+        },
+        {
+          question: "¿Cómo reservo una limpieza?",
+          answer: "Puede reservar a través de nuestro sitio web usando el formulario de reserva, o contáctenos directamente por correo electrónico. Confirmaremos su cita dentro de 24 horas.",
+        },
+        {
+          question: "¿Cuál es su política de cancelación?",
+          answer: "Entendemos que los planes cambian. Pedimos al menos 24 horas de aviso para cancelaciones o reprogramaciones para evitar un cargo por cancelación.",
+        },
+        {
+          question: "¿Están asegurados y afianzados?",
+          answer: "Sí, Horizon Operations está completamente asegurado y afianzado para su tranquilidad. Los miembros de nuestro equipo son minuciosamente verificados y tienen antecedentes verificados.",
+        },
+        {
+          question: "¿Qué pasa si no estoy satisfecho con la limpieza?",
+          answer: "Su satisfacción es nuestra prioridad. Si no está completamente satisfecho con algún aspecto de nuestro servicio, contáctenos dentro de 24 horas y lo solucionaremos.",
+        },
+      ],
+    },
+    // Booking
+    booking: {
+      title: "Reserve Su Limpieza",
+      subtitle: "Programe su limpieza en solo unos pasos",
+      steps: {
+        service: "Servicio",
+        datetime: "Fecha y Hora",
+        details: "Detalles",
+        contact: "Contacto",
+      },
+      selectService: "Seleccione Su Servicio",
+      selectDate: "Seleccione Fecha y Hora",
+      preferredDate: "Fecha Preferida",
+      preferredTime: "Hora Preferida",
+      timeSlots: {
+        morning: "Mañana (8am - 12pm)",
+        afternoon: "Tarde (12pm - 4pm)",
+        evening: "Noche (4pm - 7pm)",
+      },
+      homeDetails: "Detalles del Hogar",
+      squareFootage: "Pies Cuadrados",
+      bedrooms: "Habitaciones",
+      bathrooms: "Baños",
+      additionalNotes: "Notas Adicionales",
+      notesPlaceholder: "Cualquier solicitud especial, instrucciones de acceso o áreas de enfoque...",
+      contactInfo: "Información de Contacto",
+      name: "Nombre Completo",
+      namePlaceholder: "Su nombre completo",
+      email: "Correo Electrónico",
+      emailPlaceholder: "su@correo.com",
+      phone: "Número de Teléfono",
+      phonePlaceholder: "(555) 555-5555",
+      address: "Dirección",
+      addressPlaceholder: "Dirección",
+      city: "Ciudad",
+      cityPlaceholder: "Ciudad",
+      zip: "Código Postal",
+      zipPlaceholder: "ZIP",
+      back: "Atrás",
+      next: "Siguiente",
+      submit: "Enviar Solicitud de Reserva",
+      submitting: "Enviando...",
+      success: {
+        title: "¡Solicitud de Reserva Enviada!",
+        description: "Gracias por elegir Horizon Operations. Revisaremos su solicitud y lo contactaremos dentro de 24 horas para confirmar su cita.",
+        backHome: "Volver al Inicio",
+      },
+    },
+    // Footer
+    footer: {
+      tagline: "Servicios de limpieza profesional en los que puede confiar.",
+      quickLinks: "Enlaces Rápidos",
+      contact: "Contacto",
+      rights: "Todos los derechos reservados.",
+    },
+    // Common
+    common: {
+      learnMore: "Más Información",
+      getStarted: "Comenzar",
+      contactUs: "Contáctenos",
+    },
+  },
+} as const
+
+export type TranslationKey = keyof typeof translations.en
