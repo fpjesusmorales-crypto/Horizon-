@@ -9,6 +9,7 @@ import { TestimonialsSection } from "@/components/testimonials-section"
 import { SafetySection } from "@/components/safety-section"
 import QuoteEstimator from "@/components/quote-estimator"
 import { FaqSection } from "@/components/faq-section"
+import { CareersSection } from "@/components/careers-section"
 import { ContactSection } from "@/components/contact-section"
 import { Footer } from "@/components/footer"
 
@@ -27,6 +28,7 @@ export default function HorizonOperationsWebsite() {
         <SafetySection />
         <QuoteEstimator />
         <FaqSection />
+        <CareersSection />
         <ContactSection />
       </main>
       <Footer />
