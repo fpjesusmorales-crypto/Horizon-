@@ -17,6 +17,7 @@ export function Header() {
     { href: "/services", label: t.nav.services },
     { href: "/about", label: t.nav.about },
     { href: "/careers", label: t.nav.careers },
+    { href: "/partnerships-growth", label: t.nav.partnerships },
     { href: "/contact", label: t.nav.contact },
   ]
 
