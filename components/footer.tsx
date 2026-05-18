@@ -4,11 +4,12 @@ import Link from "next/link"
 import { useLanguage } from "@/lib/i18n"
 
 export function Footer() {
-  const { t } = useLanguage()
+  const { t, locale } = useLanguage()
 
   const footerLinks = [
     { href: "/", label: t.nav.home },
-    { href: "/services", label: t.nav.services },
+    { href: "/services", label: t.nav.residential },
+    { href: "/commercial", label: t.nav.commercial },
     { href: "/about", label: t.nav.about },
     { href: "/contact", label: t.nav.contact },
     { href: "/book", label: t.nav.bookCleaning },
