@@ -3,16 +3,34 @@
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, ChevronDown } from "lucide-react"
+import { Menu, X, ChevronDown, User } from "lucide-react"
 import { useLanguage } from "@/lib/i18n"
 import { LanguageToggle } from "./language-toggle"
+import { createClient } from "@/lib/supabase/client"
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
+  const [user, setUser] = useState<{ email?: string } | null>(null)
   const pathname = usePathname()
   const { t, locale } = useLanguage()
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const supabase = createClient()
+
+  // Check auth status
+  useEffect(() => {
+    async function checkUser() {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    checkUser()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [supabase.auth])
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -126,6 +144,22 @@ export function Header() {
 
         <div className="hidden items-center gap-4 md:flex">
           <LanguageToggle />
+          {user ? (
+            <Link
+              href="/portal"
+              className="flex items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            >
+              <User className="h-4 w-4" />
+              {locale === "es" ? "Mi Portal" : "My Portal"}
+            </Link>
+          ) : (
+            <Link
+              href="/auth/login"
+              className="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+            >
+              {locale === "es" ? "Iniciar Sesión" : "Sign In"}
+            </Link>
+          )}
           <Link
             href="/book"
             className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:-translate-y-0.5"
@@ -189,6 +223,24 @@ export function Header() {
             ))}
             <div className="mt-2 flex items-center justify-between">
               <LanguageToggle />
+              {user ? (
+                <Link
+                  href="/portal"
+                  className="flex items-center gap-2 text-sm font-medium text-teal-600"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <User className="h-4 w-4" />
+                  {locale === "es" ? "Mi Portal" : "My Portal"}
+                </Link>
+              ) : (
+                <Link
+                  href="/auth/login"
+                  className="text-sm font-medium text-teal-600"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  {locale === "es" ? "Iniciar Sesión" : "Sign In"}
+                </Link>
+              )}
             </div>
             <Link
               href="/book"
