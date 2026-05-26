@@ -8,6 +8,8 @@ export const translations = {
     nav: {
       home: "Home",
       services: "Services",
+      residential: "Residential",
+      commercial: "Commercial",
       about: "About",
       careers: "Careers",
       partnerships: "Partnerships",
@@ -383,6 +385,8 @@ export const translations = {
     nav: {
       home: "Inicio",
       services: "Servicios",
+      residential: "Residencial",
+      commercial: "Comercial",
       about: "Nosotros",
       careers: "Empleo",
       partnerships: "Alianzas",
