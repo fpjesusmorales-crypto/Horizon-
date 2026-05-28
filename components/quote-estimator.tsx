@@ -302,7 +302,7 @@ export default function QuoteEstimator() {
                   {t.quote.summary.customQuoteDesc}
                 </p>
                 <a
-                  href="mailto:Jesusmorales@horizonoperations.cleaning"
+                  href="mailto:bookings@horizonoperations.cleaning"
                   className="mt-6 inline-flex rounded-2xl bg-teal-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:-translate-y-0.5"
                 >
                   {t.quote.summary.contactUs}

@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     // Send notification to business owner
     const { error } = await resend.emails.send({
       from: "Horizon Operations <noreply@horizonoperations.cleaning>",
-      to: ["Jesusmorales@horizonoperations.cleaning"],
+      to: ["bookings@horizonoperations.cleaning"],
       subject: `New Commercial Quote Request from ${businessName}`,
       html: `
         <h2>New Commercial Cleaning Quote Request</h2>
@@ -102,7 +102,7 @@ export async function POST(request: Request) {
           </p>
           <p style="color: #475569; line-height: 1.6; margin-top: 20px;">
             If you have any questions in the meantime, feel free to reply to this email or reach us at 
-            <a href="mailto:Jesusmorales@horizonoperations.cleaning" style="color: #0d9488;">Jesusmorales@horizonoperations.cleaning</a>.
+            <a href="mailto:bookings@horizonoperations.cleaning" style="color: #0d9488;">bookings@horizonoperations.cleaning</a>.
           </p>
           <p style="color: #475569; line-height: 1.6;">
             We look forward to serving your business!

@@ -34,10 +34,10 @@ export default function ContactPage() {
               </p>
               <div className="mt-8">
                 <a
-                  href="mailto:Jesusmorales@horizonoperations.cleaning"
+                  href="mailto:contact@horizonoperations.cleaning"
                   className="text-teal-300 hover:text-teal-200 transition underline underline-offset-2"
                 >
-                  Jesusmorales@horizonoperations.cleaning
+                  contact@horizonoperations.cleaning
                 </a>
               </div>
             </div>

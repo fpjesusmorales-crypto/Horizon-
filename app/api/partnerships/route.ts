@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     // Send notification to Horizon Operations
     await resend.emails.send({
       from: "Horizon Operations <noreply@horizonoperations.cleaning>",
-      to: ["Jesusmorales@horizonoperations.cleaning"],
+      to: ["contact@horizonoperations.cleaning"],
       subject: `Partnership Inquiry from ${name}${company ? ` (${company})` : ""}`,
       html: `
         <h2>New Partnership Inquiry</h2>
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
           </div>
           <p style="color: #475569; line-height: 1.6;">
             If you have any additional questions, feel free to reply to this email or reach us at 
-            <a href="mailto:Jesusmorales@horizonoperations.cleaning" style="color: #0d9488;">Jesusmorales@horizonoperations.cleaning</a>.
+            <a href="mailto:contact@horizonoperations.cleaning" style="color: #0d9488;">contact@horizonoperations.cleaning</a>.
           </p>
           <p style="color: #0f172a; font-weight: 600;">
             — The Horizon Operations Team

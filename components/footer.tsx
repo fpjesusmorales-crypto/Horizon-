@@ -40,10 +40,10 @@ export function Footer() {
           </p>
           <p className="mt-2 text-sm text-slate-500">
             <a
-              href="mailto:Jesusmorales@horizonoperations.cleaning"
+              href="mailto:contact@horizonoperations.cleaning"
               className="hover:text-teal-600 transition"
             >
-              Jesusmorales@horizonoperations.cleaning
+              contact@horizonoperations.cleaning
             </a>
           </p>
         </div>

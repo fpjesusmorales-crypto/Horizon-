@@ -137,8 +137,8 @@ export default function InvoicesPage() {
         {invoices.length > 0 && (
           <div className="mt-6 rounded-xl bg-slate-100 p-4 text-center text-sm text-slate-600">
             Questions about billing? Contact us at{" "}
-            <a href="mailto:Jesusmorales@horizonoperations.cleaning" className="font-medium text-teal-600 hover:text-teal-700">
-              Jesusmorales@horizonoperations.cleaning
+            <a href="mailto:bookings@horizonoperations.cleaning" className="font-medium text-teal-600 hover:text-teal-700">
+              bookings@horizonoperations.cleaning
             </a>
           </div>
         )}

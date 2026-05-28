@@ -137,7 +137,7 @@ export function ContactSection() {
           <div className="space-y-6">
             <div className="rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-sm">
               <div className="text-sm font-medium text-slate-500">{t.contact.email}</div>
-              <a href="mailto:Jesusmorales@horizonoperations.cleaning" className="mt-2 block text-lg font-semibold text-slate-900 hover:text-teal-600 transition">Jesusmorales@horizonoperations.cleaning</a>
+              <a href="mailto:contact@horizonoperations.cleaning" className="mt-2 block text-lg font-semibold text-slate-900 hover:text-teal-600 transition">contact@horizonoperations.cleaning</a>
             </div>
             <div className="rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-sm">
               <div className="text-sm font-medium text-slate-500">{t.contact.message}</div>

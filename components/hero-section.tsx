@@ -26,7 +26,7 @@ export function HeroSection() {
             {t.hero.description}
           </p>
           <div className="mt-4 text-sm font-medium text-teal-300">
-            {t.hero.email} <a href="mailto:Jesusmorales@horizonoperations.cleaning" className="underline underline-offset-2 hover:text-teal-200 transition">Jesusmorales@horizonoperations.cleaning</a>
+            {t.hero.email} <a href="mailto:contact@horizonoperations.cleaning" className="underline underline-offset-2 hover:text-teal-200 transition">contact@horizonoperations.cleaning</a>
           </div>
           <div className="mt-8 flex flex-wrap gap-4">
             <a

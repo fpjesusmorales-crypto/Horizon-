@@ -75,7 +75,7 @@ export function FaqSection() {
           <p className="text-slate-600">
             {locale === "es" ? "¿Todavía tiene preguntas? " : "Still have questions? "}
             <a
-              href="mailto:Jesusmorales@horizonoperations.cleaning"
+              href="mailto:contact@horizonoperations.cleaning"
               className="font-medium text-teal-600 hover:text-teal-700 transition"
             >
               {locale === "es" ? "Contáctenos directamente" : "Contact us directly"}
