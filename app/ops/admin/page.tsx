@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
-import { Calendar, Users, ClipboardList, Plus, LogOut, Clock, CheckCircle, AlertCircle, MapPin, Route } from "lucide-react"
+import { Calendar, Users, ClipboardList, Plus, LogOut, Clock, CheckCircle, AlertCircle, MapPin, Route, BarChart3 } from "lucide-react"
+import { NotificationsDropdown } from "@/components/ops/notifications-dropdown"
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -87,9 +88,9 @@ export default async function AdminDashboard() {
             <ClipboardList className="h-5 w-5" />
             Work Orders
           </Link>
-          <Link href="/ops/admin/routes" className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-50">
+          <Link href="/ops/admin/map" className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-50">
             <Route className="h-5 w-5" />
-            Route Planning
+            Route Map
           </Link>
           <Link href="/ops/admin/schedule" className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-50">
             <Calendar className="h-5 w-5" />
@@ -98,6 +99,10 @@ export default async function AdminDashboard() {
           <Link href="/ops/admin/employees" className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-50">
             <Users className="h-5 w-5" />
             Employees
+          </Link>
+          <Link href="/ops/admin/reports" className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-50">
+            <BarChart3 className="h-5 w-5" />
+            Reports
           </Link>
         </nav>
         <div className="absolute bottom-0 left-0 right-0 border-t border-slate-200 p-4">
@@ -124,13 +129,16 @@ export default async function AdminDashboard() {
               {new Date().toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
             </p>
           </div>
-          <Link
-            href="/ops/admin/work-orders/new"
-            className="flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700"
-          >
-            <Plus className="h-4 w-4" />
-            New Work Order
-          </Link>
+          <div className="flex items-center gap-3">
+            <NotificationsDropdown />
+            <Link
+              href="/ops/admin/work-orders/new"
+              className="flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700"
+            >
+              <Plus className="h-4 w-4" />
+              New Work Order
+            </Link>
+          </div>
         </div>
 
         {/* Stats Grid */}

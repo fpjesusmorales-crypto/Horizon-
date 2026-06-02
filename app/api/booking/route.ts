@@ -1,7 +1,14 @@
 import { Resend } from "resend"
 import { NextResponse } from "next/server"
+import { createClient } from "@supabase/supabase-js"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
+
+// Create admin Supabase client for server-side operations
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 const SERVICE_LABELS: Record<string, string> = {
   standard: "Standard Cleaning",
@@ -99,6 +106,48 @@ export async function POST(request: Request) {
     if (error) {
       console.error("Resend error:", error)
       return NextResponse.json({ error: "Failed to send booking request" }, { status: 500 })
+    }
+
+    // Create work order in database for ops dashboard
+    try {
+      // Map service type to work_orders service_type
+      const serviceTypeMap: Record<string, string> = {
+        standard: "standard",
+        deep: "deep",
+        move: "move",
+      }
+
+      // Get home size description
+      const homeSize = squareFeet 
+        ? `${squareFeet} sq ft, ${bedrooms || 0} bed, ${bathrooms || 0} bath`
+        : `${bedrooms || 0} bed, ${bathrooms || 0} bath`
+
+      const { error: workOrderError } = await supabaseAdmin
+        .from("work_orders")
+        .insert({
+          customer_name: name,
+          customer_email: email,
+          customer_phone: phone,
+          address: address || "Address pending",
+          city: "Nashville", // Default city, can be parsed from address
+          service_type: serviceTypeMap[service] || service,
+          scheduled_date: preferredDate,
+          scheduled_time: preferredTime,
+          status: "pending",
+          notes: [
+            `Frequency: ${FREQUENCY_LABELS[frequency] || frequency}`,
+            `Home size: ${homeSize}`,
+            specialInstructions ? `Special instructions: ${specialInstructions}` : null,
+            formattedAltDate ? `Alternate date requested: ${formattedAltDate}` : null,
+          ].filter(Boolean).join("\n"),
+        })
+
+      if (workOrderError) {
+        console.error("Work order creation error:", workOrderError)
+        // Don't fail the whole request if work order creation fails
+      }
+    } catch (workOrderErr) {
+      console.error("Work order creation exception:", workOrderErr)
     }
 
     // Send confirmation email to customer
