@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
-import { Calendar, Users, ClipboardList, Plus, LogOut, Clock, CheckCircle, AlertCircle, MapPin } from "lucide-react"
+import { Calendar, Users, ClipboardList, Plus, LogOut, Clock, CheckCircle, AlertCircle, MapPin, Route } from "lucide-react"
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -16,7 +16,7 @@ export default async function AdminDashboard() {
     .eq("user_id", user.id)
     .single()
 
-  if (!employee || !["admin", "manager"].includes(employee.role)) {
+  if (!employee || !["admin", "dispatcher", "team_lead"].includes(employee.role)) {
     redirect("/ops/employee")
   }
 
@@ -86,6 +86,14 @@ export default async function AdminDashboard() {
           <Link href="/ops/admin/work-orders" className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-50">
             <ClipboardList className="h-5 w-5" />
             Work Orders
+          </Link>
+          <Link href="/ops/admin/routes" className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-50">
+            <Route className="h-5 w-5" />
+            Route Planning
+          </Link>
+          <Link href="/ops/admin/schedule" className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-50">
+            <Calendar className="h-5 w-5" />
+            Schedule
           </Link>
           <Link href="/ops/admin/employees" className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-50">
             <Users className="h-5 w-5" />
