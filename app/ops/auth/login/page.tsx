@@ -26,16 +26,39 @@ export default function OpsLoginPage() {
 
       if (authError) throw authError
 
-      // Check if user is an employee
-      const { data: employee, error: empError } = await supabase
+      // First, check if user is already linked to an employee record
+      let { data: employee, error: empError } = await supabase
         .from("employees")
         .select("id, role, status")
         .eq("user_id", authData.user.id)
         .single()
 
+      // If not linked, try to find employee by email and link the account
       if (empError || !employee) {
+        const { data: employeeByEmail } = await supabase
+          .from("employees")
+          .select("id, role, status, user_id")
+          .eq("email", email.toLowerCase())
+          .single()
+
+        if (employeeByEmail && !employeeByEmail.user_id) {
+          // Link the user_id to this employee record
+          const { error: linkError } = await supabase
+            .from("employees")
+            .update({ user_id: authData.user.id })
+            .eq("id", employeeByEmail.id)
+
+          if (!linkError) {
+            employee = employeeByEmail
+          }
+        } else if (employeeByEmail) {
+          employee = employeeByEmail
+        }
+      }
+
+      if (!employee) {
         await supabase.auth.signOut()
-        throw new Error("You are not authorized to access the operations portal.")
+        throw new Error("You are not authorized to access the operations portal. Contact your administrator.")
       }
 
       if (employee.status !== "active") {
@@ -44,7 +67,7 @@ export default function OpsLoginPage() {
       }
 
       // Redirect based on role
-      if (employee.role === "admin" || employee.role === "manager") {
+      if (employee.role === "admin" || employee.role === "dispatcher" || employee.role === "team_lead") {
         router.push("/ops/admin")
       } else {
         router.push("/ops/employee")
