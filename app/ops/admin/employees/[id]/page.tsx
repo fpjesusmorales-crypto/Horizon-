@@ -1,60 +1,149 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, use } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
-import { ArrowLeft, Calendar, Users, ClipboardList, LogOut } from "lucide-react"
+import { ArrowLeft, Calendar, Users, ClipboardList, LogOut, Trash2 } from "lucide-react"
 
-export default function NewEmployeePage() {
-  const [loading, setLoading] = useState(false)
+interface Employee {
+  id: string
+  first_name: string
+  last_name: string
+  email: string
+  phone: string | null
+  role: string
+  status: string
+  hourly_rate: number | null
+  hire_date: string | null
+  notes: string | null
+  user_id: string | null
+}
+
+export default function EditEmployeePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [employee, setEmployee] = useState<Employee | null>(null)
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     email: "",
     phone: "",
     role: "cleaner",
+    status: "active",
     hourly_rate: "",
     notes: "",
   })
   const router = useRouter()
   const supabase = createClient()
 
+  useEffect(() => {
+    async function loadData() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.push("/ops/auth/login")
+        return
+      }
+
+      // Check current user role
+      const { data: currentEmp } = await supabase
+        .from("employees")
+        .select("role")
+        .eq("user_id", user.id)
+        .single()
+
+      if (!currentEmp || currentEmp.role !== "admin") {
+        router.push("/ops/admin")
+        return
+      }
+      setCurrentUserRole(currentEmp.role)
+
+      // Load employee
+      const { data: emp, error } = await supabase
+        .from("employees")
+        .select("*")
+        .eq("id", id)
+        .single()
+
+      if (error || !emp) {
+        router.push("/ops/admin/employees")
+        return
+      }
+
+      setEmployee(emp)
+      setFormData({
+        first_name: emp.first_name,
+        last_name: emp.last_name,
+        email: emp.email,
+        phone: emp.phone || "",
+        role: emp.role,
+        status: emp.status,
+        hourly_rate: emp.hourly_rate?.toString() || "",
+        notes: emp.notes || "",
+      })
+      setLoading(false)
+    }
+    loadData()
+  }, [id, router, supabase])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
+    setSaving(true)
 
-    // First create the auth user
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email: formData.email,
-      email_confirm: true,
-      password: Math.random().toString(36).slice(-12), // Temporary password
-      user_metadata: {
+    const { error } = await supabase
+      .from("employees")
+      .update({
         first_name: formData.first_name,
         last_name: formData.last_name,
-      },
-    })
-
-    // For now, just create the employee record without linking to auth
-    // The employee can be linked later when they sign up
-    const { error } = await supabase.from("employees").insert({
-      first_name: formData.first_name,
-      last_name: formData.last_name,
-      email: formData.email,
-      phone: formData.phone || null,
-      role: formData.role,
-      hourly_rate: formData.hourly_rate ? parseFloat(formData.hourly_rate) : null,
-      notes: formData.notes || null,
-      status: "active",
-    })
+        email: formData.email,
+        phone: formData.phone || null,
+        role: formData.role,
+        status: formData.status,
+        hourly_rate: formData.hourly_rate ? parseFloat(formData.hourly_rate) : null,
+        notes: formData.notes || null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
 
     if (error) {
-      alert("Error creating employee: " + error.message)
-      setLoading(false)
+      alert("Error updating employee: " + error.message)
+      setSaving(false)
       return
     }
 
     router.push("/ops/admin/employees")
+  }
+
+  const handleDelete = async () => {
+    if (!confirm("Are you sure you want to delete this employee? This action cannot be undone.")) {
+      return
+    }
+
+    const { error } = await supabase
+      .from("employees")
+      .delete()
+      .eq("id", id)
+
+    if (error) {
+      alert("Error deleting employee: " + error.message)
+      return
+    }
+
+    router.push("/ops/admin/employees")
+  }
+
+  const formatRole = (role: string) => {
+    return role.replace("_", " ")
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-100">
+        <p className="text-slate-600">Loading...</p>
+      </div>
+    )
   }
 
   return (
@@ -98,7 +187,7 @@ export default function NewEmployeePage() {
           <Link href="/ops/admin/employees" className="rounded-lg p-2 hover:bg-slate-200">
             <ArrowLeft className="h-5 w-5 text-slate-600" />
           </Link>
-          <h1 className="text-2xl font-bold text-slate-900">Add Employee</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Edit Employee</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="mx-auto max-w-xl">
@@ -159,17 +248,36 @@ export default function NewEmployeePage() {
                     <option value="dispatcher">Dispatcher</option>
                     <option value="admin">Admin</option>
                   </select>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {formData.role === "admin" && "Full access to all features"}
+                    {formData.role === "dispatcher" && "Can manage work orders and view employees"}
+                    {formData.role === "team_lead" && "Can manage work orders for their team"}
+                    {formData.role === "cleaner" && "Can view and complete assigned jobs"}
+                  </p>
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-slate-700">Hourly Rate ($)</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.hourly_rate}
-                    onChange={(e) => setFormData({ ...formData, hourly_rate: e.target.value })}
+                  <label className="mb-1 block text-sm font-medium text-slate-700">Status *</label>
+                  <select
+                    required
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                     className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-teal-500 focus:outline-none"
-                  />
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                    <option value="on_leave">On Leave</option>
+                  </select>
                 </div>
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-slate-700">Hourly Rate ($)</label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={formData.hourly_rate}
+                  onChange={(e) => setFormData({ ...formData, hourly_rate: e.target.value })}
+                  className="w-full rounded-xl border border-slate-200 px-4 py-2.5 text-slate-900 focus:border-teal-500 focus:outline-none"
+                />
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-slate-700">Notes</label>
@@ -182,26 +290,42 @@ export default function NewEmployeePage() {
               </div>
             </div>
 
-            <div className="mt-6 flex justify-end gap-3">
-              <Link
-                href="/ops/admin/employees"
-                className="rounded-xl border border-slate-200 px-6 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-              >
-                Cancel
-              </Link>
+            <div className="mt-6 flex items-center justify-between">
               <button
-                type="submit"
-                disabled={loading}
-                className="rounded-xl bg-teal-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+                type="button"
+                onClick={handleDelete}
+                className="flex items-center gap-2 rounded-xl border border-red-200 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50"
               >
-                {loading ? "Creating..." : "Add Employee"}
+                <Trash2 className="h-4 w-4" />
+                Delete Employee
               </button>
+              <div className="flex gap-3">
+                <Link
+                  href="/ops/admin/employees"
+                  className="rounded-xl border border-slate-200 px-6 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                >
+                  Cancel
+                </Link>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="rounded-xl bg-teal-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+                >
+                  {saving ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
             </div>
           </div>
 
-          <p className="mt-4 text-center text-sm text-slate-500">
-            The employee will need to sign up at /ops/auth/login with this email to access the portal.
-          </p>
+          {employee?.user_id ? (
+            <p className="mt-4 text-center text-sm text-green-600">
+              This employee has linked their account and can access the portal.
+            </p>
+          ) : (
+            <p className="mt-4 text-center text-sm text-slate-500">
+              This employee has not yet signed up. They can sign up at /ops/auth/login with email: {formData.email}
+            </p>
+          )}
         </form>
       </main>
     </div>

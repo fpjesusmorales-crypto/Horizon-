@@ -15,7 +15,7 @@ export default async function EmployeesPage() {
     .eq("user_id", user.id)
     .single()
 
-  if (!currentEmployee || !["admin", "manager"].includes(currentEmployee.role)) {
+  if (!currentEmployee || !["admin", "dispatcher", "team_lead"].includes(currentEmployee.role)) {
     redirect("/ops/employee")
   }
 
@@ -36,10 +36,15 @@ export default async function EmployeesPage() {
   const getRoleBadge = (role: string) => {
     const styles: Record<string, string> = {
       admin: "bg-purple-100 text-purple-700",
-      manager: "bg-blue-100 text-blue-700",
+      dispatcher: "bg-blue-100 text-blue-700",
+      team_lead: "bg-amber-100 text-amber-700",
       cleaner: "bg-teal-100 text-teal-700",
     }
     return styles[role] || "bg-slate-100 text-slate-700"
+  }
+
+  const formatRole = (role: string) => {
+    return role.replace("_", " ")
   }
 
   return (
@@ -93,7 +98,7 @@ export default async function EmployeesPage() {
         {/* Employees Grid */}
         <div className="grid grid-cols-3 gap-4">
           {employees?.map((emp) => (
-            <div key={emp.id} className="rounded-2xl bg-white p-6 shadow-sm">
+            <Link key={emp.id} href={`/ops/admin/employees/${emp.id}`} className="block rounded-2xl bg-white p-6 shadow-sm transition hover:shadow-md">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-lg font-medium text-slate-600">
@@ -103,7 +108,7 @@ export default async function EmployeesPage() {
                     <p className="font-semibold text-slate-900">{emp.first_name} {emp.last_name}</p>
                     <div className="mt-1 flex gap-2">
                       <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${getRoleBadge(emp.role)}`}>
-                        {emp.role}
+                        {formatRole(emp.role)}
                       </span>
                       <span className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${getStatusBadge(emp.status)}`}>
                         {emp.status.replace("_", " ")}
@@ -129,7 +134,7 @@ export default async function EmployeesPage() {
                   Hired: {new Date(emp.hire_date).toLocaleDateString()}
                 </p>
               )}
-            </div>
+            </Link>
           ))}
         </div>
       </main>
