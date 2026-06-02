@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Menu, X, ChevronDown, User } from "lucide-react"
+import { Menu, X, ChevronDown, User, Settings } from "lucide-react"
 import { useLanguage } from "@/lib/i18n"
 import { LanguageToggle } from "./language-toggle"
 import { createClient } from "@/lib/supabase/client"
@@ -12,6 +12,7 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [servicesOpen, setServicesOpen] = useState(false)
   const [user, setUser] = useState<{ email?: string } | null>(null)
+  const [isEmployee, setIsEmployee] = useState(false)
   const pathname = usePathname()
   const { t, locale } = useLanguage()
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -22,11 +23,27 @@ export function Header() {
     async function checkUser() {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
+      
+      if (user) {
+        // Check if user is an employee with admin/dispatcher/team_lead role
+        const { data: employee } = await supabase
+          .from("employees")
+          .select("role")
+          .eq("user_id", user.id)
+          .single()
+        
+        if (employee && ["admin", "dispatcher", "team_lead"].includes(employee.role)) {
+          setIsEmployee(true)
+        }
+      }
     }
     checkUser()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
+      if (!session?.user) {
+        setIsEmployee(false)
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -144,6 +161,15 @@ export function Header() {
 
         <div className="hidden items-center gap-4 md:flex">
           <LanguageToggle />
+          {isEmployee && (
+            <Link
+              href="/ops/admin"
+              className="flex items-center gap-2 rounded-2xl border border-purple-200 bg-purple-50 px-4 py-2.5 text-sm font-medium text-purple-700 transition hover:bg-purple-100"
+            >
+              <Settings className="h-4 w-4" />
+              {locale === "es" ? "Ops Dashboard" : "Ops Dashboard"}
+            </Link>
+          )}
           {user ? (
             <Link
               href="/portal"
@@ -223,24 +249,36 @@ export function Header() {
             ))}
             <div className="mt-2 flex items-center justify-between">
               <LanguageToggle />
-              {user ? (
-                <Link
-                  href="/portal"
-                  className="flex items-center gap-2 text-sm font-medium text-teal-600"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <User className="h-4 w-4" />
-                  {locale === "es" ? "Mi Portal" : "My Portal"}
-                </Link>
-              ) : (
-                <Link
-                  href="/auth/login"
-                  className="text-sm font-medium text-teal-600"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {locale === "es" ? "Iniciar Sesión" : "Sign In"}
-                </Link>
-              )}
+              <div className="flex items-center gap-3">
+                {isEmployee && (
+                  <Link
+                    href="/ops/admin"
+                    className="flex items-center gap-1 text-sm font-medium text-purple-600"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Settings className="h-4 w-4" />
+                    Ops
+                  </Link>
+                )}
+                {user ? (
+                  <Link
+                    href="/portal"
+                    className="flex items-center gap-2 text-sm font-medium text-teal-600"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <User className="h-4 w-4" />
+                    {locale === "es" ? "Mi Portal" : "My Portal"}
+                  </Link>
+                ) : (
+                  <Link
+                    href="/auth/login"
+                    className="text-sm font-medium text-teal-600"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {locale === "es" ? "Iniciar Sesión" : "Sign In"}
+                  </Link>
+                )}
+              </div>
             </div>
             <Link
               href="/book"
