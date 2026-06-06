@@ -1,6 +1,7 @@
 import { Resend } from "resend"
 import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
+import { sendSMS, smsTemplates } from "@/lib/sms"
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -191,6 +192,13 @@ export async function POST(request: Request) {
         </div>
       `,
     })
+
+    // Send SMS confirmation to customer (fire-and-forget)
+    try {
+      await sendSMS(phone, smsTemplates.bookingConfirmation(name, formattedDate))
+    } catch (smsErr) {
+      console.error("[v0] Booking SMS error:", smsErr)
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {

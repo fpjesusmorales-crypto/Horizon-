@@ -52,6 +52,8 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
   const [afterPhotos, setAfterPhotos] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [notifying, setNotifying] = useState(false)
+  const [enRouteSent, setEnRouteSent] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
@@ -142,8 +144,32 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
 
     if (!error) {
       setJob({ ...job, status: "in_progress", check_in_time: new Date().toISOString() })
+      // Notify customer that the cleaning has started
+      fetch("/api/ops/sms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workOrderId: job.id, type: "started" }),
+      }).catch((err) => console.error("[v0] SMS error:", err))
     }
     setSaving(false)
+  }
+
+  const handleNotifyEnRoute = async () => {
+    if (!job) return
+    setNotifying(true)
+    try {
+      const res = await fetch("/api/ops/sms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workOrderId: job.id, type: "en_route", eta: "15-20 minutes" }),
+      })
+      if (res.ok) {
+        setEnRouteSent(true)
+      }
+    } catch (err) {
+      console.error("[v0] En route SMS error:", err)
+    }
+    setNotifying(false)
   }
 
   const handleCheckOut = async () => {
@@ -168,6 +194,12 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
       .eq("id", job.id)
 
     if (!error) {
+      // Notify customer that the cleaning is complete
+      fetch("/api/ops/sms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ workOrderId: job.id, type: "complete" }),
+      }).catch((err) => console.error("[v0] SMS error:", err))
       router.push("/ops/employee")
     }
     setSaving(false)
@@ -348,13 +380,24 @@ export default function JobDetailPage({ params }: { params: Promise<{ id: string
       {/* Bottom Action Bar */}
       <div className="fixed bottom-0 left-0 right-0 border-t border-slate-200 bg-white p-4">
         {job.status === "assigned" && (
-          <button
-            onClick={handleCheckIn}
-            disabled={saving}
-            className="w-full rounded-xl bg-teal-600 py-3 font-medium text-white hover:bg-teal-700 disabled:opacity-50"
-          >
-            {saving ? "Starting..." : "Check In - Start Job"}
-          </button>
+          <div className="space-y-2">
+            {job.customer_phone && (
+              <button
+                onClick={handleNotifyEnRoute}
+                disabled={notifying || enRouteSent}
+                className="w-full rounded-xl border border-teal-600 py-3 font-medium text-teal-700 hover:bg-teal-50 disabled:opacity-50"
+              >
+                {enRouteSent ? "Customer Notified ✓" : notifying ? "Sending..." : "Notify Customer: On My Way"}
+              </button>
+            )}
+            <button
+              onClick={handleCheckIn}
+              disabled={saving}
+              className="w-full rounded-xl bg-teal-600 py-3 font-medium text-white hover:bg-teal-700 disabled:opacity-50"
+            >
+              {saving ? "Starting..." : "Check In - Start Job"}
+            </button>
+          </div>
         )}
         {job.status === "in_progress" && (
           <button
