@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 
     const { data, error } = await resend.emails.send({
       from: "Horizon Operations <noreply@horizonoperations.cleaning>",
-      to: ["Jesusmorales@horizonoperations.cleaning"],
+      to: ["contact@horizonoperations.cleaning"],
       subject: `New Cleaning Request from ${name}`,
       html: `
         <h2>New Cleaning Request</h2>
@@ -64,7 +64,7 @@ export async function POST(request: Request) {
           </div>
           <p style="color: #475569; line-height: 1.6;">
             If you have any questions in the meantime, feel free to reply to this email or reach us at 
-            <a href="mailto:Jesusmorales@horizonoperations.cleaning" style="color: #0d9488;">Jesusmorales@horizonoperations.cleaning</a>.
+            <a href="mailto:contact@horizonoperations.cleaning" style="color: #0d9488;">contact@horizonoperations.cleaning</a>.
           </p>
           <p style="color: #475569; line-height: 1.6;">
             We look forward to serving you!
