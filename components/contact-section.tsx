@@ -86,7 +86,7 @@ export function ContactSection() {
           <div className="space-y-6">
             <div className="rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-sm">
               <div className="text-sm font-medium text-slate-500">Phone</div>
-              <div className="mt-2 text-lg font-semibold">(615) 428-7282</div>
+              <a href="tel:+16154287282" className="mt-2 block text-lg font-semibold transition hover:text-teal-600">(615) 428-7282</a>
             </div>
             <div className="rounded-[1.75rem] border border-slate-200 bg-white p-8 shadow-sm">
               <div className="text-sm font-medium text-slate-500">Email</div>

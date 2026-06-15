@@ -22,6 +22,14 @@ export function Footer() {
           <p className="mt-3 max-w-md text-sm text-slate-500">
             Residential cleaning built on reliability, clear communication, and consistent results.
           </p>
+          <div className="mt-4 flex flex-col gap-1 text-sm text-slate-600">
+            <a href="tel:+16154287282" className="font-medium transition hover:text-slate-900">
+              (615) 428-7282
+            </a>
+            <a href="mailto:horizonoperationsllc@gmail.com" className="transition hover:text-slate-900">
+              horizonoperationsllc@gmail.com
+            </a>
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 text-sm text-slate-600 md:items-end">
