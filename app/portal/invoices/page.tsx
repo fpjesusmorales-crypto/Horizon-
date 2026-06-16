@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react"
 import { createClient } from "@/lib/supabase/client"
 import Link from "next/link"
+import { InvoiceCheckout } from "@/components/invoice-checkout"
+import { X } from "lucide-react"
 
 interface Invoice {
   id: string
@@ -17,6 +19,7 @@ interface Invoice {
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([])
   const [loading, setLoading] = useState(true)
+  const [payingInvoice, setPayingInvoice] = useState<Invoice | null>(null)
   const supabase = createClient()
 
   useEffect(() => {
@@ -85,6 +88,7 @@ export default function InvoicesPage() {
                   <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Amount</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Status</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-slate-900">Due Date</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-slate-900">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -108,6 +112,18 @@ export default function InvoicesPage() {
                       {invoice.due_date
                         ? new Date(invoice.due_date).toLocaleDateString()
                         : "-"}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      {invoice.status !== "paid" ? (
+                        <button
+                          onClick={() => setPayingInvoice(invoice)}
+                          className="rounded-lg bg-teal-600 px-4 py-2 text-xs font-medium text-white transition hover:bg-teal-700"
+                        >
+                          Pay Now
+                        </button>
+                      ) : (
+                        <span className="text-xs text-slate-400">Paid</span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -143,6 +159,29 @@ export default function InvoicesPage() {
           </div>
         )}
       </div>
+
+      {payingInvoice && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4">
+          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-slate-900">Pay Invoice</h2>
+                <p className="text-sm text-slate-500">
+                  {payingInvoice.description || "Cleaning Service"} — ${payingInvoice.amount.toFixed(2)}
+                </p>
+              </div>
+              <button
+                onClick={() => setPayingInvoice(null)}
+                className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600"
+                aria-label="Close payment dialog"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <InvoiceCheckout invoiceId={payingInvoice.id} />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
