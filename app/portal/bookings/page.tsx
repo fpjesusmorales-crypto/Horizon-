@@ -3,6 +3,7 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/server"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { ReviewForm } from "@/components/review-form"
 
 export const metadata = {
   title: "My Bookings | Horizon Operations",
@@ -32,6 +33,16 @@ export default async function BookingsPage() {
   ) || []
 
   const cancelledBookings = bookings?.filter((b) => b.status === "cancelled") || []
+
+  // Fetch the customer's existing reviews so we don't show duplicate prompts
+  const { data: reviews } = await supabase
+    .from("reviews")
+    .select("id, rating, comment, work_order_id")
+    .eq("customer_user_id", user.id)
+
+  const reviewByWorkOrder = new Map(
+    (reviews || []).filter((r) => r.work_order_id).map((r) => [r.work_order_id as string, r])
+  )
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
@@ -141,12 +152,22 @@ export default async function BookingsPage() {
                         <p className="mt-1 text-sm text-slate-600">${booking.price}</p>
                       )}
                     </div>
-                    <Link
-                      href="/book"
-                      className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-200"
-                    >
-                      Book Again
-                    </Link>
+                    <div className="flex flex-col items-start gap-2 sm:items-end">
+                      <ReviewForm
+                        bookingId={booking.id}
+                        workOrderId={booking.work_order_id ?? null}
+                        customerName={booking.customer_name ?? null}
+                        existingReview={
+                          booking.work_order_id ? reviewByWorkOrder.get(booking.work_order_id) ?? null : null
+                        }
+                      />
+                      <Link
+                        href="/book"
+                        className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-200"
+                      >
+                        Book Again
+                      </Link>
+                    </div>
                   </div>
                 ))}
               </div>
