@@ -24,6 +24,7 @@ export const translations = {
       titleHighlight: "Without the Hassle",
       description: "Horizon Operations provides dependable residential cleaning focused on consistency, professionalism, and peace of mind. Clear communication, reliable scheduling, and service you can trust.",
       email: "Email:",
+      phone: "Call:",
       viewServices: "View Services",
     },
     // Services
@@ -401,6 +402,7 @@ export const translations = {
       titleHighlight: "Sin Complicaciones",
       description: "Horizon Operations ofrece servicios de limpieza residencial confiables, enfocados en consistencia, profesionalismo y tranquilidad. Comunicación clara, programación confiable y servicio en el que puede confiar.",
       email: "Correo:",
+      phone: "Llamar:",
       viewServices: "Ver Servicios",
     },
     // Services

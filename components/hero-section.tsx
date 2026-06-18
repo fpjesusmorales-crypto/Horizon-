@@ -25,8 +25,28 @@ export function HeroSection() {
           <p className="mt-6 max-w-xl text-base leading-7 text-slate-300 md:text-lg">
             {t.hero.description}
           </p>
-          <div className="mt-4 text-sm font-medium text-teal-300">
-            {t.hero.email} <a href="mailto:contact@horizonoperations.cleaning" className="underline underline-offset-2 hover:text-teal-200 transition">contact@horizonoperations.cleaning</a>
+          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-medium text-teal-300">
+            <span>
+              {t.hero.email}{" "}
+              <a
+                href="mailto:contact@horizonoperations.cleaning"
+                className="underline underline-offset-2 transition hover:text-teal-200"
+              >
+                contact@horizonoperations.cleaning
+              </a>
+            </span>
+            <span aria-hidden="true" className="hidden text-teal-500/50 sm:inline">
+              |
+            </span>
+            <span>
+              {t.hero.phone}{" "}
+              <a
+                href="tel:+16154287282"
+                className="underline underline-offset-2 transition hover:text-teal-200"
+              >
+                (615) 428-7282
+              </a>
+            </span>
           </div>
           <div className="mt-8 flex flex-wrap gap-4">
             <a
