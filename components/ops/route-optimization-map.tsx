@@ -54,11 +54,24 @@ export function RouteOptimizationMap({ jobs, selectedEmployeeId }: RouteMapProps
   const [totalDuration, setTotalDuration] = useState<string>("")
   const [totalDistance, setTotalDistance] = useState<string>("")
   const [isOptimizing, setIsOptimizing] = useState(false)
+  const [authFailed, setAuthFailed] = useState(false)
+
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || ""
 
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
+    googleMapsApiKey: apiKey,
     libraries: ["places"],
   })
+
+  // Google reports key/billing/referrer rejections via a global callback,
+  // NOT through loadError. Capture it so we can show a useful message
+  // instead of Google's blank gray "Oops! Something went wrong" overlay.
+  useEffect(() => {
+    ;(window as typeof window & { gm_authFailure?: () => void }).gm_authFailure = () => {
+      console.log("[v0] Google Maps gm_authFailure triggered")
+      setAuthFailed(true)
+    }
+  }, [])
 
   const mappableJobs = jobs.filter((j) => j.latitude && j.longitude)
   
@@ -146,24 +159,51 @@ export function RouteOptimizationMap({ jobs, selectedEmployeeId }: RouteMapProps
     fontWeight: "bold",
   })
 
-  if (loadError) {
+  if (!apiKey) {
     return (
       <div className="flex h-[600px] flex-col items-center justify-center gap-3 rounded-2xl bg-slate-100 p-6 text-center text-slate-600">
         <MapPin className="h-8 w-8 text-slate-400" />
-        <p className="font-semibold text-slate-900">Google Maps failed to load</p>
+        <p className="font-semibold text-slate-900">Map unavailable</p>
         <p className="max-w-md text-sm">
-          Your API key is set, but Google rejected the request. In the Google Cloud Console, make sure the
-          following are all enabled for this key&apos;s project:
+          The <code className="rounded bg-slate-200 px-1">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code> environment
+          variable is not set for this deployment. Add it in your project settings and redeploy.
+        </p>
+      </div>
+    )
+  }
+
+  if (loadError || authFailed) {
+    return (
+      <div className="flex h-[600px] flex-col items-center justify-center gap-3 rounded-2xl bg-slate-100 p-6 text-center text-slate-600">
+        <MapPin className="h-8 w-8 text-slate-400" />
+        <p className="font-semibold text-slate-900">Google rejected this Maps API key</p>
+        <p className="max-w-md text-sm">
+          The key is set correctly, but Google blocked the request. Open the{" "}
+          <a
+            href="https://console.cloud.google.com/google/maps-apis/api-list"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-teal-700 underline underline-offset-2"
+          >
+            Google Cloud Console
+          </a>{" "}
+          and verify all of the following for this key&apos;s project:
         </p>
         <ul className="max-w-md list-inside list-disc text-left text-sm">
-          <li>Billing is enabled on the project</li>
+          <li>Billing is enabled on the project (required even for free usage)</li>
           <li>&quot;Maps JavaScript API&quot; is enabled</li>
           <li>&quot;Directions API&quot; is enabled (used for route optimization)</li>
+          <li>&quot;Places API&quot; is enabled (the map loads the places library)</li>
           <li>
-            The key&apos;s HTTP referrer restrictions allow{" "}
-            <code className="rounded bg-slate-200 px-1">https://horizonoperations.cleaning/*</code>
+            Under the key&apos;s <strong>Application restrictions → Website restrictions</strong>, add{" "}
+            <code className="rounded bg-slate-200 px-1">horizonoperations.cleaning/*</code> and{" "}
+            <code className="rounded bg-slate-200 px-1">*.vusercontent.net/*</code>
           </li>
         </ul>
+        <p className="max-w-md text-xs text-slate-400">
+          Tip: open the browser console (F12) on this page to see the exact error code (e.g.
+          ApiNotActivatedMapError, BillingNotEnabledMapError, or RefererNotAllowedMapError).
+        </p>
       </div>
     )
   }
