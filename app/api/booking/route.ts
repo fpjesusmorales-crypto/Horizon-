@@ -3,14 +3,6 @@ import { NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import { sendSMS, smsTemplates } from "@/lib/sms"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
-// Create admin Supabase client for server-side operations
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-
 const SERVICE_LABELS: Record<string, string> = {
   standard: "Standard Cleaning",
   deep: "Deep Cleaning",
@@ -26,7 +18,13 @@ const FREQUENCY_LABELS: Record<string, string> = {
 
 export async function POST(request: Request) {
   try {
-    const {
+  const resend = new Resend(process.env.RESEND_API_KEY)
+  // Create admin Supabase client for server-side operations
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+  const {
       service,
       frequency,
       preferredDate,

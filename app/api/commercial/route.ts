@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server"
 import { Resend } from "resend"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 const serviceTypeLabels: Record<string, string> = {
   office: "Office Cleaning",
   retail: "Retail Spaces",
@@ -21,6 +19,7 @@ const frequencyLabels: Record<string, string> = {
 
 export async function POST(request: Request) {
   try {
+    const resend = new Resend(process.env.RESEND_API_KEY)
     const body = await request.json()
     const { 
       businessName, 
