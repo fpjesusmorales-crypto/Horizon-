@@ -60,7 +60,6 @@ export function RouteOptimizationMap({ jobs, selectedEmployeeId }: RouteMapProps
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: apiKey,
-    libraries: ["places"],
   })
 
   // Google reports key/billing/referrer rejections via a global callback,
