@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
-import { Calendar, Users, ClipboardList, Plus, LogOut, Clock, CheckCircle, AlertCircle, MapPin, Route, BarChart3 } from "lucide-react"
+import { Calendar, Users, ClipboardList, Plus, LogOut, Clock, CheckCircle, AlertCircle, MapPin, Route, BarChart3, TrendingUp } from "lucide-react"
 import { NotificationsDropdown } from "@/components/ops/notifications-dropdown"
+import { RecurringGenerateButton } from "@/components/ops/recurring-generate-button"
 
 export default async function AdminDashboard() {
   const supabase = await createClient()
@@ -104,6 +105,10 @@ export default async function AdminDashboard() {
             <BarChart3 className="h-5 w-5" />
             Reports
           </Link>
+          <Link href="/ops/admin/analytics" className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2 text-slate-600 hover:bg-slate-50">
+            <TrendingUp className="h-5 w-5" />
+            Analytics
+          </Link>
         </nav>
         <div className="absolute bottom-0 left-0 right-0 border-t border-slate-200 p-4">
           <div className="mb-3 text-sm">
@@ -131,6 +136,7 @@ export default async function AdminDashboard() {
           </div>
           <div className="flex items-center gap-3">
             <NotificationsDropdown />
+            <RecurringGenerateButton />
             <Link
               href="/ops/admin/work-orders/new"
               className="flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-teal-700"

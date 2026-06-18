@@ -67,6 +67,25 @@ export default async function PortalDashboard() {
             </p>
           </div>
 
+          {/* Refer a friend banner */}
+          <Link
+            href="/portal/referrals"
+            className="mb-8 flex items-center justify-between rounded-2xl border border-teal-200 bg-teal-50 p-5 transition hover:border-teal-300 hover:shadow-md"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-600">
+                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                </svg>
+              </div>
+              <div>
+                <p className="font-semibold text-slate-900">Refer a friend, get $25</p>
+                <p className="text-sm text-slate-600">You both save when they book their first cleaning.</p>
+              </div>
+            </div>
+            <span className="hidden text-sm font-medium text-teal-700 sm:inline">Get your link →</span>
+          </Link>
+
           {/* Quick Actions */}
           <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Link

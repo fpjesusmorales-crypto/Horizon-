@@ -148,8 +148,22 @@ export function RouteOptimizationMap({ jobs, selectedEmployeeId }: RouteMapProps
 
   if (loadError) {
     return (
-      <div className="flex h-[600px] items-center justify-center rounded-2xl bg-slate-100 text-slate-500">
-        Error loading map. Please check your Google Maps API key.
+      <div className="flex h-[600px] flex-col items-center justify-center gap-3 rounded-2xl bg-slate-100 p-6 text-center text-slate-600">
+        <MapPin className="h-8 w-8 text-slate-400" />
+        <p className="font-semibold text-slate-900">Google Maps failed to load</p>
+        <p className="max-w-md text-sm">
+          Your API key is set, but Google rejected the request. In the Google Cloud Console, make sure the
+          following are all enabled for this key&apos;s project:
+        </p>
+        <ul className="max-w-md list-inside list-disc text-left text-sm">
+          <li>Billing is enabled on the project</li>
+          <li>&quot;Maps JavaScript API&quot; is enabled</li>
+          <li>&quot;Directions API&quot; is enabled (used for route optimization)</li>
+          <li>
+            The key&apos;s HTTP referrer restrictions allow{" "}
+            <code className="rounded bg-slate-200 px-1">https://horizonoperations.cleaning/*</code>
+          </li>
+        </ul>
       </div>
     )
   }
