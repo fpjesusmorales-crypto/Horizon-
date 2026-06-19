@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
 import { ArrowLeft, Calendar, Users, ClipboardList, LogOut, MapPin, Clock, Phone, Mail, CheckCircle, AlertCircle } from "lucide-react"
+import { WorkOrderControls } from "@/components/ops/work-order-controls"
 
 export default async function WorkOrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -250,6 +251,14 @@ export default async function WorkOrderDetailPage({ params }: { params: Promise<
                 </div>
               )}
             </div>
+
+            {/* Management Controls */}
+            <WorkOrderControls
+              workOrderId={workOrder.id}
+              currentStatus={workOrder.status}
+              currentEmployeeId={workOrder.assigned_employee_id ?? null}
+              employees={allEmployees ?? []}
+            />
 
             {/* Timestamps */}
             {(workOrder.check_in_time || workOrder.check_out_time) && (
