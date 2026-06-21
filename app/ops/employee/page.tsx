@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
 import { MapPin, Clock, CheckCircle, LogOut, Calendar, Navigation } from "lucide-react"
+import { LocationSharingToggle } from "@/components/ops/location-sharing-toggle"
 
 export default async function EmployeeDashboard() {
   const supabase = await createClient()
