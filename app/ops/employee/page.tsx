@@ -71,6 +71,10 @@ export default async function EmployeeDashboard() {
       </header>
 
       <main className="p-4">
+        <div className="mb-6">
+          <LocationSharingToggle initialSharing={employee.location_sharing ?? false} />
+        </div>
+
         {/* Today's Jobs */}
         <section className="mb-8">
           <div className="mb-4 flex items-center gap-2">
