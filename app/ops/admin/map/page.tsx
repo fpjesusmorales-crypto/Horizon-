@@ -108,7 +108,7 @@ export default function RouteMapPage() {
       .eq("status", "active")
 
     if (orders) {
-      setWorkOrders(orders as WorkOrder[])
+      setWorkOrders(orders as unknown as WorkOrder[])
     }
 
     if (emps) {
@@ -229,7 +229,7 @@ export default function RouteMapPage() {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={fetchData}
+              onClick={() => fetchData()}
               className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-50"
             >
               <RefreshCw className="h-5 w-5" />
