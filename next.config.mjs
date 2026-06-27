@@ -5,6 +5,16 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    localPatterns: [
+      {
+        pathname: "/images/**",
+        search: "",
+      },
+      {
+        pathname: "/images/**",
+        search: "?v=2",
+      },
+    ],
   },
 }
 

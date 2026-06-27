@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 import Link from "next/link"
 import { MapPin, Clock, CheckCircle, LogOut, Calendar, Navigation } from "lucide-react"
+import { LocationSharingToggle } from "@/components/ops/location-sharing-toggle"
 
 export default async function EmployeeDashboard() {
   const supabase = await createClient()
@@ -70,6 +71,10 @@ export default async function EmployeeDashboard() {
       </header>
 
       <main className="p-4">
+        <div className="mb-6">
+          <LocationSharingToggle initialSharing={employee.location_sharing ?? false} />
+        </div>
+
         {/* Today's Jobs */}
         <section className="mb-8">
           <div className="mb-4 flex items-center gap-2">

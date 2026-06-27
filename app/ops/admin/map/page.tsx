@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, MapPin, Clock, User, Navigation, RefreshCw, Filter } from "lucide-react"
+import { ArrowLeft, MapPin, Clock, User, Navigation, RefreshCw, Filter, Radio } from "lucide-react"
 import { GoogleMap, useJsApiLoader, Marker, DirectionsRenderer, InfoWindow } from "@react-google-maps/api"
 import { createClient } from "@/lib/supabase/client"
+import { backfillJobCoordinates } from "@/app/actions/location"
 
 interface WorkOrder {
   id: string
@@ -29,6 +30,10 @@ interface Employee {
   first_name: string
   last_name: string
   color: string
+  current_latitude: number | null
+  current_longitude: number | null
+  location_updated_at: string | null
+  location_sharing: boolean
 }
 
 const employeeColors = [
@@ -59,6 +64,7 @@ export default function RouteMapPage() {
   const [employees, setEmployees] = useState<Employee[]>([])
   const [selectedEmployee, setSelectedEmployee] = useState<string>("all")
   const [selectedMarker, setSelectedMarker] = useState<WorkOrder | null>(null)
+  const [selectedEmployeeMarker, setSelectedEmployeeMarker] = useState<Employee | null>(null)
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null)
   const [loading, setLoading] = useState(true)
   const [optimizing, setOptimizing] = useState(false)
@@ -69,11 +75,19 @@ export default function RouteMapPage() {
   })
 
   useEffect(() => {
-    fetchData()
+    // Backfill any jobs missing coordinates once, then load data.
+    backfillJobCoordinates()
+      .catch(() => {})
+      .finally(() => fetchData())
+
+    // Refresh every 30s so employee pins track live and new jobs appear.
+    const interval = setInterval(() => fetchData(true), 30000)
+    return () => clearInterval(interval)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  async function fetchData() {
-    setLoading(true)
+  async function fetchData(silent = false) {
+    if (!silent) setLoading(true)
     const today = new Date().toISOString().split("T")[0]
 
     // Fetch today's work orders
@@ -87,14 +101,14 @@ export default function RouteMapPage() {
       .neq("status", "cancelled")
       .order("scheduled_time")
 
-    // Fetch employees
+    // Fetch employees including their live location
     const { data: emps } = await supabase
       .from("employees")
-      .select("id, first_name, last_name")
+      .select("id, first_name, last_name, current_latitude, current_longitude, location_updated_at, location_sharing")
       .eq("status", "active")
 
     if (orders) {
-      setWorkOrders(orders as WorkOrder[])
+      setWorkOrders(orders as unknown as WorkOrder[])
     }
 
     if (emps) {
@@ -106,7 +120,7 @@ export default function RouteMapPage() {
       )
     }
 
-    setLoading(false)
+    if (!silent) setLoading(false)
   }
 
   const filteredOrders = selectedEmployee === "all"
@@ -114,6 +128,26 @@ export default function RouteMapPage() {
     : workOrders.filter((o) => o.assigned_employee?.id === selectedEmployee)
 
   const ordersWithCoords = filteredOrders.filter((o) => o.latitude && o.longitude)
+
+  // Employees actively sharing a location, respecting the employee filter.
+  const liveEmployees = employees.filter(
+    (e) =>
+      e.location_sharing &&
+      e.current_latitude != null &&
+      e.current_longitude != null &&
+      (selectedEmployee === "all" || e.id === selectedEmployee),
+  )
+
+  const timeAgo = (iso: string | null) => {
+    if (!iso) return "unknown"
+    const diff = Date.now() - new Date(iso).getTime()
+    const mins = Math.floor(diff / 60000)
+    if (mins < 1) return "just now"
+    if (mins === 1) return "1 min ago"
+    if (mins < 60) return `${mins} mins ago`
+    const hrs = Math.floor(mins / 60)
+    return hrs === 1 ? "1 hour ago" : `${hrs} hours ago`
+  }
 
   const optimizeRoute = useCallback(async () => {
     if (ordersWithCoords.length < 2 || !isLoaded) return
@@ -195,7 +229,7 @@ export default function RouteMapPage() {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={fetchData}
+              onClick={() => fetchData()}
               className="rounded-lg border border-slate-200 p-2 text-slate-600 hover:bg-slate-50"
             >
               <RefreshCw className="h-5 w-5" />
@@ -336,6 +370,53 @@ export default function RouteMapPage() {
                 </InfoWindow>
               )}
 
+              {/* Live Employee Markers */}
+              {liveEmployees.map((emp) => (
+                <Marker
+                  key={`emp-${emp.id}`}
+                  position={{ lat: emp.current_latitude!, lng: emp.current_longitude! }}
+                  onClick={() => setSelectedEmployeeMarker(emp)}
+                  zIndex={1000}
+                  icon={{
+                    path: "M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z",
+                    fillColor: emp.color,
+                    fillOpacity: 1,
+                    strokeColor: "white",
+                    strokeWeight: 2,
+                    scale: 1.6,
+                    anchor: new google.maps.Point(12, 22),
+                  }}
+                  title={`${emp.first_name} ${emp.last_name}`}
+                />
+              ))}
+
+              {/* Employee Info Window */}
+              {selectedEmployeeMarker && (
+                <InfoWindow
+                  position={{
+                    lat: selectedEmployeeMarker.current_latitude!,
+                    lng: selectedEmployeeMarker.current_longitude!,
+                  }}
+                  onCloseClick={() => setSelectedEmployeeMarker(null)}
+                >
+                  <div className="max-w-xs p-2">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="inline-block h-3 w-3 rounded-full"
+                        style={{ backgroundColor: selectedEmployeeMarker.color }}
+                      />
+                      <h3 className="font-semibold text-slate-900">
+                        {selectedEmployeeMarker.first_name} {selectedEmployeeMarker.last_name}
+                      </h3>
+                    </div>
+                    <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
+                      <Radio className="h-3 w-3 text-teal-600" />
+                      Live location · {timeAgo(selectedEmployeeMarker.location_updated_at)}
+                    </p>
+                  </div>
+                </InfoWindow>
+              )}
+
               {/* Optimized Route */}
               {directions && <DirectionsRenderer directions={directions} />}
             </GoogleMap>
@@ -348,7 +429,15 @@ export default function RouteMapPage() {
 
         {/* Legend */}
         <div className="mt-4 rounded-xl bg-white p-4 shadow-sm">
-          <h3 className="mb-3 font-semibold text-slate-900">Employee Legend</h3>
+          <div className="mb-3 flex items-center justify-between">
+            <h3 className="font-semibold text-slate-900">Employee Legend</h3>
+            <span className="flex items-center gap-1.5 text-xs font-medium text-slate-500">
+              <Radio className={`h-3.5 w-3.5 ${liveEmployees.length > 0 ? "text-teal-600" : "text-slate-300"}`} />
+              {liveEmployees.length > 0
+                ? `${liveEmployees.length} sharing location`
+                : "No live locations"}
+            </span>
+          </div>
           <div className="flex flex-wrap gap-4">
             {employees.map((emp) => (
               <div key={emp.id} className="flex items-center gap-2">
