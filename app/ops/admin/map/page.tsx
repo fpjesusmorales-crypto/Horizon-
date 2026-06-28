@@ -1,18 +1,18 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { ArrowLeft, MapPin, Clock, User, Navigation, RefreshCw, Filter, Radio } from "lucide-react"
 import { GoogleMap, useJsApiLoader, Marker, DirectionsRenderer, InfoWindow } from "@react-google-maps/api"
 import { createClient } from "@/lib/supabase/client"
-import { backfillJobCoordinates } from "@/app/actions/location"
 
 interface WorkOrder {
   id: string
   customer_name: string
   address: string
   city: string
+  zip: string | null
   scheduled_time: string
   status: string
   service_type: string
@@ -68,6 +68,9 @@ export default function RouteMapPage() {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null)
   const [loading, setLoading] = useState(true)
   const [optimizing, setOptimizing] = useState(false)
+  // Tracks work order ids we've already tried to geocode this session,
+  // so we don't repeatedly hit the geocoder for the same job.
+  const geocodeAttempted = useRef<Set<string>>(new Set())
 
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
@@ -75,16 +78,51 @@ export default function RouteMapPage() {
   })
 
   useEffect(() => {
-    // Backfill any jobs missing coordinates once, then load data.
-    backfillJobCoordinates()
-      .catch(() => {})
-      .finally(() => fetchData())
+    fetchData()
 
     // Refresh every 30s so employee pins track live and new jobs appear.
     const interval = setInterval(() => fetchData(true), 30000)
     return () => clearInterval(interval)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Geocode jobs missing coordinates in the browser. The Maps key has
+  // referrer restrictions, which Google forbids on the server-side
+  // Geocoding API — but the client-side Geocoder works fine.
+  useEffect(() => {
+    if (!isLoaded) return
+    const missing = workOrders.filter(
+      (o) => (!o.latitude || !o.longitude) && o.address && !geocodeAttempted.current.has(o.id),
+    )
+    if (missing.length === 0) return
+
+    const geocoder = new google.maps.Geocoder()
+    missing.forEach((order) => {
+      geocodeAttempted.current.add(order.id)
+      const fullAddress = [order.address, order.city, order.zip].filter(Boolean).join(", ")
+      geocoder.geocode({ address: fullAddress }, async (results, status) => {
+        if (status !== "OK" || !results?.[0]) {
+          console.log("[v0] geocode failed for", order.id, status)
+          return
+        }
+        const loc = results[0].geometry.location
+        const lat = loc.lat()
+        const lng = loc.lng()
+        const { error } = await supabase
+          .from("work_orders")
+          .update({ latitude: lat, longitude: lng })
+          .eq("id", order.id)
+        if (error) {
+          console.log("[v0] failed saving coords for", order.id, error.message)
+          return
+        }
+        setWorkOrders((prev) =>
+          prev.map((o) => (o.id === order.id ? { ...o, latitude: lat, longitude: lng } : o)),
+        )
+      })
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoaded, workOrders])
 
   async function fetchData(silent = false) {
     if (!silent) setLoading(true)
@@ -94,7 +132,7 @@ export default function RouteMapPage() {
     const { data: orders } = await supabase
       .from("work_orders")
       .select(`
-        id, customer_name, address, city, scheduled_time, status, service_type, latitude, longitude,
+        id, customer_name, address, city, zip, scheduled_time, status, service_type, latitude, longitude,
         assigned_employee:employees!work_orders_assigned_employee_id_fkey(id, first_name, last_name)
       `)
       .eq("scheduled_date", today)
